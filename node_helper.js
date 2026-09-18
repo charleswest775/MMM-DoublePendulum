@@ -9,7 +9,9 @@ const fs = require("node:fs");
 const { execFileSync } = require("node:child_process");
 
 let HZ = 100;
-try { HZ = Number(execFileSync("getconf", ["CLK_TCK"]).toString()) || 100; } catch (e) { /* not Linux */ }
+// stderr ignored: by default execFileSync relays it to ours, and under pm2 that write fails
+// (EFAULT) asynchronously, past the try
+try { HZ = Number(execFileSync("getconf", ["CLK_TCK"], { stdio: ["ignore", "pipe", "ignore"] }).toString()) || 100; } catch (e) { /* not Linux */ }
 
 const read = (f) => { try { return fs.readFileSync(f, "utf8"); } catch (e) { return null; } };
 

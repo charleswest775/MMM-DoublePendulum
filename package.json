@@ -1,0 +1,11 @@
+{
+  "name": "mmm-chaostheory",
+  "version": "0.1.0",
+  "description": "MagicMirror² module: animated chaos-theory simulations (double pendulum, and more to come).",
+  "main": "MMM-ChaosTheory.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics"],
+  "license": "MIT"
+}

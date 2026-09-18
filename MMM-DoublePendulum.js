@@ -12,6 +12,7 @@ Module.register("MMM-ChaosTheory", {
 		height: 900,
 		fps: 20,           // frame cap; lower = less CPU
 		showMath: true,    // equations and live numbers under the canvas
+		statsPanel: false, // what the mirror is spending: fps, CPU (Electron, cage, each core), temperature
 		debugStats: false  // show achieved fps and frame timings in the corner of the screen
 	},
 
@@ -42,6 +43,8 @@ Module.register("MMM-ChaosTheory", {
 		this.startedAt = 0;
 		this.lastReadout = 0;
 		this.stats = this.config.debugStats ? this.startStats() : null;
+		this.framesSinceStats = 0;
+		this.lastStatsAt = performance.now();
 	},
 
 	getDom () {
@@ -68,6 +71,12 @@ Module.register("MMM-ChaosTheory", {
 			this.wrapper = document.createElement("div");
 			this.wrapper.className = "chaos-wrapper";
 			this.wrapper.append(this.canvas, this.caption);
+			if (this.config.statsPanel) {
+				this.panel = document.createElement("div");
+				this.panel.className = "chaos-stats";
+				this.panel.style.width = `${this.config.width}px`;
+				this.wrapper.append(this.panel);
+			}
 		}
 		return this.wrapper;
 	},
@@ -122,11 +131,13 @@ Module.register("MMM-ChaosTheory", {
 	play () {
 		if (this.running || !this.canvas || !this.sim) return;
 		this.running = true;
+		if (this.panel) this.sendSocketNotification("CHAOS_STATS_START", { interval: 2000 });
 		this.lastFrame = performance.now();
 		this.schedule();
 	},
 
 	pause () {
+		if (this.running && this.panel) this.sendSocketNotification("CHAOS_STATS_STOP");
 		this.running = false;
 		clearTimeout(this.timer);
 		cancelAnimationFrame(this.rafId);
@@ -160,7 +171,10 @@ Module.register("MMM-ChaosTheory", {
 		const t0 = performance.now();
 		sim.step(dt);
 		const t1 = performance.now();
-		if (!sim.resting) sim.draw(this.ctx, this.canvas.width, this.canvas.height);
+		if (!sim.resting) {
+			sim.draw(this.ctx, this.canvas.width, this.canvas.height);
+			this.framesSinceStats++;
+		}
 		if (this.stats) this.stats.frame(t1 - t0, performance.now() - t1);
 
 		// DOM text is re-laid-out and re-rasterised on change, so update it only twice a second
@@ -170,6 +184,35 @@ Module.register("MMM-ChaosTheory", {
 			if (this.stats && this.stats.el.textContent !== this.stats.text) this.stats.el.textContent = this.stats.text;
 			if (html !== this.readoutHtml) this.readoutEl.innerHTML = this.readoutHtml = html;
 		}
+	},
+
+	socketNotificationReceived (notification, stats) {
+		if (notification === "CHAOS_STATS" && this.panel && this.running) this.renderPanel(stats);
+	},
+
+	// One line, refreshed every 2 s by the node_helper: frames drawn, CPU as % of one core
+	// (the Pi has four), a bar per core, temperature, and where we are in the cycle.
+	renderPanel (st) {
+		const now = performance.now();
+		const fps = (this.framesSinceStats * 1000) / (now - this.lastStatsAt);
+		this.framesSinceStats = 0;
+		this.lastStatsAt = now;
+		const names = this.config.simulations, i = this.simIndex;
+		const left = Math.max(0, Math.round(this.config.cycleSeconds - (now - this.startedAt) / 1000));
+		const cycle = `${names[i]} ${i + 1}/${names.length} · next in ${left} s`;
+		if (st.unsupported) {
+			this.panel.innerHTML = `<b>${fps.toFixed(1)}</b> fps · ${cycle}`;
+			return;
+		}
+		const pi = st.cores.reduce((a, b) => a + b, 0) / st.cores.length;
+		const bars = st.cores.map((c) => `<span class="bar"><span style="height:${Math.min(100, c).toFixed(0)}%"></span></span>`).join("");
+		const hot = st.temp >= 70 ? "hot" : st.temp >= 60 ? "warm" : "cool";
+		this.panel.innerHTML =
+			`<b>${fps.toFixed(1)}</b> fps` +
+			`<span class="sep">·</span>Electron <b>${st.electron.toFixed(0)}%</b> cage <b>${st.cage.toFixed(0)}%</b> <span class="dim">of a core</span>` +
+			`<span class="sep">·</span>Pi <b>${pi.toFixed(0)}%</b> ${bars}` +
+			(st.temp ? `<span class="sep">·</span><b class="${hot}">${st.temp.toFixed(1)} °C</b>` : "") +
+			`<span class="sep">·</span><span class="dim">${cycle}</span>`;
 	},
 
 	// debugStats: frames drawn per second, JS time in step/draw, and Chromium's long animation

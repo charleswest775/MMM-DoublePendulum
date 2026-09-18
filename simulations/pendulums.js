@@ -14,10 +14,10 @@
 	const wrap = (r) => r - 2 * Math.PI * Math.round(r / (2 * Math.PI));
 
 	class Pendulums {
-		// pendulumStyle "exposure": like a long-exposure photo of LED-tipped pendulums, only the
-		// tips' light trails are drawn, and they accumulate: cheap, because each frame changes
-		// only a small area. "live": arms, bobs and fading trails redrawn every frame (≈3× the CPU).
-		constructor ({ count = 5, separation = 1e-6, runSeconds = 30, theta1, theta2, pendulumStyle = "exposure" } = {}) {
+		// pendulumStyle "live": arms, bobs and fading trails, redrawn every frame.
+		// "exposure": like a long-exposure photo of LED-tipped pendulums, only the tips' light
+		// trails, accumulating: each frame changes a small area, so about half the CPU on a Pi.
+		constructor ({ count = 5, separation = 1e-6, runSeconds = 30, theta1, theta2, pendulumStyle = "live" } = {}) {
 			this.style = pendulumStyle;
 			this.count = count;
 			this.separation = separation;

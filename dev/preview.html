@@ -45,6 +45,11 @@
 			for (const [k, v] of q) config[k] = k === "simulations" ? v.split(",") : isNaN(v) ? v : Number(v);
 			const m = Object.assign(Object.create(definition), { config, name: "MMM-ChaosTheory", hidden: false, data: {} });
 			m.file = (f) => `../${f}`;
+			// no node_helper here: feed the stats panel made-up numbers so its layout can be seen
+			m.sendSocketNotification = (n) => {
+				if (n === "CHAOS_STATS_START") m.fake = m.fake || setInterval(() => m.socketNotificationReceived("CHAOS_STATS",
+					{ electron: 120 + Math.random() * 30, cage: 12, cores: [0, 1, 2, 3].map(() => 30 + Math.random() * 40), temp: 66 + Math.random() * 5 }), 2000);
+			};
 			for (const src of m.getScripts()) {
 				await new Promise((ok, fail) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
 			}

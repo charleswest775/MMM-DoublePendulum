@@ -65,3 +65,40 @@
 	white-space: pre-wrap;
 	font-variant-numeric: tabular-nums;
 }
+
+.MMM-ChaosTheory .chaos-stats {
+	margin-top: 14px;
+	padding-top: 8px;
+	border-top: 1px solid #222;
+	font-family: "DejaVu Sans Mono", Menlo, monospace;
+	font-size: 15px;
+	color: #999;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.MMM-ChaosTheory .chaos-stats b { color: #fff; font-weight: normal; }
+.MMM-ChaosTheory .chaos-stats .dim { color: #666; }
+.MMM-ChaosTheory .chaos-stats .sep { color: #444; margin: 0 8px; }
+.MMM-ChaosTheory .chaos-stats .cool { color: #7fd88f; }
+.MMM-ChaosTheory .chaos-stats .warm { color: #f2c14e; }
+.MMM-ChaosTheory .chaos-stats .hot { color: #ff6b6b; }
+
+/* one small bar per core */
+.MMM-ChaosTheory .chaos-stats .bar {
+	display: inline-block;
+	position: relative;
+	width: 7px;
+	height: 16px;
+	margin-left: 2px;
+	vertical-align: -3px;
+	background: #222;
+}
+
+.MMM-ChaosTheory .chaos-stats .bar > span {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #6fa8ff;
+}

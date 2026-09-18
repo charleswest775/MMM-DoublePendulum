@@ -5,8 +5,8 @@ cycling through five simulations, each with its equations and live numbers under
 
 | key | what you see |
 |---|---|
-| `lorenz` | **The Lorenz attractor.** Three trajectories released 10⁻⁵ apart trace the butterfly as one white line, then split into red, green and blue. |
-| `pendulums` | **Sensitive dependence.** Five double pendulums released 10⁻⁶ rad apart, drawn like a long-exposure photo of LED-tipped pendulums, with the angles to 7 decimals and a log-scale plot of their spread (a straight line = exponential divergence). |
+| `lorenz` | **The Lorenz attractor.** Three trajectories released 10⁻⁵ apart trace the butterfly as one white line, then split into red, green and blue, while the view turns slowly in 3D. |
+| `pendulums` | **Sensitive dependence.** Five double pendulums released 10⁻⁶ rad apart swing as one, then fan out, with the angles to 7 decimals and a log-scale plot of their spread (a straight line = exponential divergence). |
 | `basins` | **Fractal basins.** A pendulum over three magnets: each pixel is coloured by the magnet it ends over. Two bobs released 6×10⁻⁴ apart swing live and land on different magnets; then the view zooms ×10, ×100, ×1000 into the boundary where they started. |
 | `logistic` | **The road to chaos.** The logistic map's bifurcation diagram paints itself, then a cobweb diagram sweeps r through period doubling into chaos, with the period and Lyapunov exponent. |
 | `icons` | **Symmetry in chaos.** One point hopping chaotically, millions of times, develops a symmetric picture (Field & Golubitsky). |
@@ -37,7 +37,8 @@ No npm dependencies.
 		cycleSeconds: 60,
 		width: 900,
 		height: 900,
-		fps: 20
+		fps: 20,
+		statsPanel: true
 	}
 }
 ```
@@ -49,8 +50,9 @@ No npm dependencies.
 | `width`, `height` | `900` | Canvas size in pixels |
 | `fps` | `20` | Frame-rate cap |
 | `showMath` | `true` | Equations and live numbers under the canvas |
-| `lorenzStyle` | `"exposure"` | `"rotate"`: fading trail in a slowly turning 3D view. About 3× the CPU on a Pi |
-| `pendulumStyle` | `"exposure"` | `"live"`: arms, bobs and fading trails. About 2–3× the CPU on a Pi |
+| `lorenzStyle` | `"rotate"` | `"exposure"`: fixed view, trails build up like a long-exposure photo. About a third of the CPU on a Pi |
+| `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
+| `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
 ## Performance
@@ -59,17 +61,20 @@ Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canva
 as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of one core
 (the Pi has four). Baseline mirror without the module: 0.2%.
 
-| | % of one core |
-|---|---|
-| module **hidden** (e.g. another MMM-pages page) | **0.3** |
-| `lorenz` | 55 |
-| `pendulums` | 66 |
-| `basins` (average over its sequence; ~7 while a picture is held) | 42 |
-| `logistic` | 73 |
-| `icons` (while developing, ~45 s; then ~7) | 66 |
-| *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* |
-| *`lorenzStyle: "rotate"`* | *155* |
-| *`pendulumStyle: "live"`* | *144* |
+| | % of one core | achieved fps |
+|---|---|---|
+| module **hidden** (e.g. another MMM-pages page) | **0.3** | 0 |
+| `lorenz` (rotating) | 165 | 16 |
+| `pendulums` (live) | 146 | 19 |
+| `basins` (average over its sequence; ~7 while a picture is held) | 42 | 20 |
+| `logistic` | 73 | 17 |
+| `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
+| `lorenzStyle: "exposure"` | 55 | 20+ |
+| `pendulumStyle: "exposure"` | 66 | 20+ |
+| *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |
+
+Where a simulation can't reach 20 fps the Pi's renderer is saturated, so its CPU stays near
+150% whatever `fps` is set to.
 
 What costs what, from micro-benchmarks on the Pi (`dev/bench.js`):
 

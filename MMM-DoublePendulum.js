@@ -24,7 +24,10 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/lorenz.js",
 			"simulations/magnetic-pendulum.js",
 			"simulations/logistic.js",
-			"simulations/icons.js"
+			"simulations/icons.js",
+			"data/elements.js",
+			"data/element-history.js",
+			"simulations/atom.js"
 		].map((f) => this.file(f));
 	},
 
@@ -118,7 +121,7 @@ Module.register("MMM-ChaosTheory", {
 		this.sim = new Sim({ ...this.config, file: (f) => this.file(f) });
 		this.startedAt = performance.now();
 		this.lastReadout = 0;
-		const info = Sim.info || {};
+		const info = this.sim.info || Sim.info || {}; // per instance where the caption depends on it (atom)
 		this.titleEl.innerHTML = info.title ? `${info.title}<span class="chaos-subtitle">${info.subtitle || ""}</span>` : "";
 		this.mathEl.innerHTML = (info.equations || []).map((l) => `<div>${l}</div>`).join("");
 		this.readoutEl.innerHTML = this.readoutHtml = "";
@@ -131,13 +134,13 @@ Module.register("MMM-ChaosTheory", {
 	play () {
 		if (this.running || !this.canvas || !this.sim) return;
 		this.running = true;
-		if (this.panel) this.sendSocketNotification("CHAOS_STATS_START", { interval: 2000 });
+		if (this.panel) this.sendSocketNotification("CHAOS_STATS_START", { interval: 2000, id: this.identifier });
 		this.lastFrame = performance.now();
 		this.schedule();
 	},
 
 	pause () {
-		if (this.running && this.panel) this.sendSocketNotification("CHAOS_STATS_STOP");
+		if (this.running && this.panel) this.sendSocketNotification("CHAOS_STATS_STOP", { id: this.identifier });
 		this.running = false;
 		clearTimeout(this.timer);
 		cancelAnimationFrame(this.rafId);

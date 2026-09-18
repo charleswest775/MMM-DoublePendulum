@@ -13,6 +13,12 @@ cycling through five simulations, each with its equations and live numbers under
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
+And one that isn't chaos, meant for a page of its own (see [An atom page](#an-atom-page)):
+
+| key | what you see |
+|---|---|
+| `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
+
 Built for a **Raspberry Pi 3 without GPU acceleration**: everything is drawn by the CPU, so the
 drawing is designed around what that costs (see [Performance](#performance)), and the animation
 stops completely while the module is hidden.
@@ -52,8 +58,57 @@ No npm dependencies.
 | `showMath` | `true` | Equations and live numbers under the canvas |
 | `lorenzStyle` | `"rotate"` | `"exposure"`: fixed view, trails build up like a long-exposure photo. About a third of the CPU on a Pi |
 | `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
+| `atomElements` | `[]` | `atom`: symbols to show, e.g. `["H", "Fe", "Au"]`. Empty = all 118 |
+| `atomOrder` | `"shuffle"` | `atom`: `"sequence"` goes through them by atomic number |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
+
+## An atom page
+
+A second instance of the module, showing only `atom`, makes a page of its own. With
+[MMM-pages](https://github.com/edward-shen/MMM-pages), give each instance a class to tell them apart:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-chaos",
+	position: "middle_center",
+	config: { /* as above */ }
+},
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-atom",
+	position: "middle_center",
+	config: {
+		simulations: ["atom"],
+		cycleSeconds: 45,   // a new element this often, and each time the page comes round
+		width: 700,         // smaller than the chaos canvas: less to redraw, and room for the text
+		height: 700
+	}
+},
+{
+	module: "MMM-pages",
+	config: { modules: [[], ["page-chaos"], ["page-atom"]], /* … */ }
+}
+```
+
+What's real in the picture: the electrons per shell, and the orbital periods, which follow
+Kepler's third law T² ∝ r³ as circular orbits around a charge do (in Bohr's model r ∝ n² and
+T ∝ n³, the same law). The radii are schematic, evenly spaced: true Bohr radii grow as n², and a
+heavy atom's inner shells are a hundred times smaller than its outer ones. The numbers under the
+history are Bohr's formulas for the innermost electron, which sees nearly the full nuclear
+charge: r = a₀/Z, v = Zαc, E = −Z²·13.6 eV (gold's moves at 0.58 c).
+
+"Joined the table" is 1869 for the 62 elements in Mendeleev's first table (which also had
+didymium, later split into Pr and Nd, and lacked terbium, then in doubt); for later discoveries
+the year the element was placed; from element 104 on, the year IUPAC fixed the name. The
+histories are in `data/element-history.js`: corrections welcome.
+
+The idea is from [MMM-AtomVisualizer](https://github.com/KristjanESPERANTO/MMM-AtomVisualizer)
+(MIT), which animates DOM nodes with CSS at the display's refresh rate. This one draws on the
+module's canvas, so the frame cap and `suspend()` apply. `data/elements.js` is derived from its
+data (`tools/build-elements.js`), originally from
+[Periodic-Table-JSON](https://github.com/Bowserinator/Periodic-Table-JSON) (CC BY-SA 3.0).
 
 ## Performance
 
@@ -69,6 +124,7 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `basins` (average over its sequence; ~7 while a picture is held) | 42 | 20 |
 | `logistic` | 73 | 17 |
 | `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
+| `atom` | *not yet measured* | |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |
@@ -101,7 +157,9 @@ node tools/render-basins.js  # re-render assets/basins-*.png after changing the 
 The tests check the physics against known results rather than looks: energy conservation,
 the Lorenz fixed points and Lyapunov exponent (≈ 0.906), exponential divergence of the
 pendulums, the logistic map's bifurcation points and Feigenbaum ratio, the basins' three-fold
-symmetry and convergence under a finer time step, and the icons' n-fold symmetry.
+symmetry and convergence under a finer time step, the icons' n-fold symmetry, and for the atom
+that every element's shells hold Z electrons, the periods obey T² ∝ r³, and every element has
+its history.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order.

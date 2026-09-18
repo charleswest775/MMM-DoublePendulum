@@ -3,7 +3,8 @@
      `python3 -m http.server`) and open /dev/preview.html. The stub below implements just
      the parts of MagicMirror's Module API this module uses, including hide/show →
      suspend/resume, so the page lifecycle can be exercised with the buttons.
-     Query options override config, e.g. ?simulations=lorenz&fps=30 -->
+     Query options override config, e.g. ?simulations=lorenz&fps=30 or
+     ?simulations=atom&atomElements=Au,Tc&width=700&height=700 -->
 <html>
 <head>
 	<meta charset="utf-8">
@@ -42,7 +43,7 @@
 		(async () => {
 			const q = new URLSearchParams(location.search);
 			const config = { ...definition.defaults };
-			for (const [k, v] of q) config[k] = k === "simulations" ? v.split(",") : isNaN(v) ? v : Number(v);
+			for (const [k, v] of q) config[k] = k === "simulations" || k === "atomElements" ? v.split(",") : isNaN(v) ? v : Number(v);
 			const m = Object.assign(Object.create(definition), { config, name: "MMM-ChaosTheory", hidden: false, data: {} });
 			m.file = (f) => `../${f}`;
 			// no node_helper here: feed the stats panel made-up numbers so its layout can be seen

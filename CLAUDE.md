@@ -3,7 +3,7 @@
 Charles's own MagicMirror² module. Goal: beautiful, *physically correct* chaos-theory
 animations for his hallway mirror, as one page in a rotation of pages.
 
-## What exists (v0.2.0)
+## What exists (v0.3.0)
 
 - `MMM-ChaosTheory.js` — module shell: one canvas plus an HTML caption (equations + live
   readout, updated 2×/s). Cycles through `config.simulations` every `cycleSeconds` and on each
@@ -13,6 +13,13 @@ animations for his hallway mirror, as one page in a rotation of pages.
   optional `readout()` and static `info` (title, equations). UMD-style so physics runs in Node.
   `lorenz`, `pendulums`, `basins` (magnetic pendulum over pre-rendered maps in `assets/`),
   `logistic`, `icons`, and the original `doublePendulum`.
+- `atom` is not chaos: a Bohr-style atom for a page of its own (second module instance with
+  `classes: "page-atom"`, see README). One element per sim instance, so `cycleSeconds` and
+  `resume()` move to the next element. A sim instance may set `this.info` to supply its own
+  caption. `data/elements.js` is generated (`tools/build-elements.js`);
+  `data/element-history.js` (who / when / how / joined the table) is hand-written. After
+  KristjanESPERANTO/MMM-AtomVisualizer, which is DOM + CSS animation: no fps cap, wrong for the Pi.
+  **Not yet measured on the Pi.**
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing
   micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.

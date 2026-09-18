@@ -1,7 +1,7 @@
 {
   "name": "mmm-chaostheory",
-  "version": "0.1.0",
-  "description": "MagicMirror² module: animated chaos-theory simulations (double pendulum, and more to come).",
+  "version": "0.2.0",
+  "description": "MagicMirror² module: animated chaos-theory simulations (Lorenz attractor, diverging pendulums, fractal basins, logistic map, symmetric icons).",
   "main": "MMM-ChaosTheory.js",
   "scripts": {
     "test": "node --test"

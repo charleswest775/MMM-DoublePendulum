@@ -3,20 +3,30 @@
 Charles's own MagicMirror² module. Goal: beautiful, *physically correct* chaos-theory
 animations for his hallway mirror, as one page in a rotation of pages.
 
-## What exists (v0.1.0)
+## What exists (v0.2.0)
 
-- `MMM-ChaosTheory.js` — module shell: one canvas, `requestAnimationFrame` loop capped to
-  `config.fps`, dt clamped to 100 ms, **`suspend()` cancels the loop and `resume()` starts a
-  fresh run**. Simulations are pluggable classes on `window.ChaosSimulations` with
-  `step(dt)` + `draw(ctx, w, h)`.
-- `simulations/double-pendulum.js` — RK4 at a fixed 1/240 s substep, fading trail drawn in
-  6 alpha bands (not per-segment alpha, which is costlier in software rendering). Physics is
-  UMD-style so it can be `require`d in Node.
-- `tests/` — `node --test`, no dependencies: energy conservation (< 1e-4 drift over 60 s),
-  chaos (1e-9 rad start difference → macroscopic gap), small-angle regularity, trail cap.
-  Keep physics verified by tests like these; "looks chaotic" is not evidence of correctness.
+- `MMM-ChaosTheory.js` — module shell: one canvas plus an HTML caption (equations + live
+  readout, updated 2×/s). Cycles through `config.simulations` every `cycleSeconds` and on each
+  `resume()`. Loop: `setTimeout` until a frame is due, then one `requestAnimationFrame`.
+  `suspend()` stops it; a sim with `resting = true` is polled only every 500 ms.
+- Simulations are classes on `window.ChaosSimulations` with `step(dt)`, `draw(ctx, w, h)`,
+  optional `readout()` and static `info` (title, equations). UMD-style so physics runs in Node.
+  `lorenz`, `pendulums`, `basins` (magnetic pendulum over pre-rendered maps in `assets/`),
+  `logistic`, `icons`, and the original `doublePendulum`.
+- `tests/` — `node --test`, no dependencies, physics checked against known results.
+- `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing
+  micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.
 
-**Not yet done:** never run inside MagicMirror, never measured on the Pi. That's the first job.
+## Performance findings on the Pi (measured, see README)
+
+- Hidden: 0.3% of one core (baseline 0.2%) — suspend() verified via MMM-Remote-Control hide.
+- A frame that changes the canvas costs ~2%/fps fixed; beyond that, cost scales with the
+  **bounding box of everything changed in the frame**. Full redraws of a 900² canvas at 20 fps
+  saturate the pipeline (~150%). JS is never the bottleneck (<3 ms/frame).
+- So: draw incrementally (long-exposure trails), keep each frame's changes spatially compact,
+  and rest when the picture is static. Line width, opacity, `rAF` vs timer made no difference.
+- MagicMirror applies `electronSwitches` after app ready, so `remote-debugging-port` can't be
+  set that way; use `debugStats: true` and a `grim` screenshot to see fps on the Pi.
 
 ## Ideas Charles liked
 

@@ -12,8 +12,7 @@ Module.register("MMM-ChaosTheory", {
 		height: 900,
 		fps: 20,           // frame cap; lower = less CPU
 		showMath: true,    // equations and live numbers under the canvas
-		loop: "timer",     // "timer" (setTimeout + one rAF per drawn frame) or "raf" (rAF every vsync)
-		opaque: true       // opaque canvas: the compositor needn't blend it with the page
+		debugStats: false  // show achieved fps and frame timings in the corner of the screen
 	},
 
 	getScripts () {
@@ -36,12 +35,13 @@ Module.register("MMM-ChaosTheory", {
 		this.canvas = null;
 		this.sim = null;
 		this.simIndex = -1;
-		this.timer = null;   // pending setTimeout (loop: "timer")
+		this.timer = null;   // pending setTimeout
 		this.rafId = null;   // pending requestAnimationFrame
 		this.running = false;
 		this.lastFrame = 0;
 		this.startedAt = 0;
 		this.lastReadout = 0;
+		this.stats = this.config.debugStats ? this.startStats() : null;
 	},
 
 	getDom () {
@@ -51,7 +51,7 @@ Module.register("MMM-ChaosTheory", {
 			this.canvas.className = "chaos-canvas";
 			this.canvas.width = this.config.width;
 			this.canvas.height = this.config.height;
-			this.ctx = this.canvas.getContext("2d", { alpha: !this.config.opaque });
+			this.ctx = this.canvas.getContext("2d", { alpha: false });
 
 			this.caption = document.createElement("div");
 			this.caption.className = "chaos-caption";
@@ -136,14 +136,6 @@ Module.register("MMM-ChaosTheory", {
 	schedule () {
 		if (!this.running) return;
 		const interval = 1000 / this.config.fps;
-		if (this.config.loop === "raf") {
-			this.rafId = requestAnimationFrame((now) => {
-				if (now - this.lastFrame < interval - 2) return this.schedule();
-				this.frame(now);
-				this.schedule();
-			});
-			return;
-		}
 		// Sleep until the next frame is due and only then ask for an animation frame,
 		// so Chromium isn't woken at 60 Hz for frames we'd throw away. A sim that is
 		// resting (e.g. finished drawing a static picture) is polled slowly instead.
@@ -165,14 +157,41 @@ Module.register("MMM-ChaosTheory", {
 		// polled every 500 ms and integrates nothing, so let its clock keep real time
 		const dt = Math.min(now - this.lastFrame, sim.resting ? 1000 : 100) / 1000;
 		this.lastFrame = now;
+		const t0 = performance.now();
 		sim.step(dt);
+		const t1 = performance.now();
 		if (!sim.resting) sim.draw(this.ctx, this.canvas.width, this.canvas.height);
+		if (this.stats) this.stats.frame(t1 - t0, performance.now() - t1);
 
 		// DOM text is re-laid-out and re-rasterised on change, so update it only twice a second
 		if (this.config.showMath && sim.readout && now - this.lastReadout > 500) {
 			this.lastReadout = now;
 			const html = sim.readout(); // simulations build this themselves from numbers
+			if (this.stats && this.stats.el.textContent !== this.stats.text) this.stats.el.textContent = this.stats.text;
 			if (html !== this.readoutHtml) this.readoutEl.innerHTML = this.readoutHtml = html;
 		}
+	},
+
+	// debugStats: frames drawn per second, JS time in step/draw, and Chromium's long animation
+	// frames (which include style, layout and paint work on the main thread, not just JS)
+	startStats () {
+		const s = { n: 0, step: 0, draw: 0, loaf: [], text: "measuring…" };
+		s.el = document.createElement("div");
+		s.el.style.cssText = "position:fixed;left:8px;bottom:4px;font:14px monospace;color:#8f8;z-index:9999";
+		document.body.append(s.el);
+		s.frame = (a, b) => { s.n++; s.step += a; s.draw += b; };
+		try {
+			new PerformanceObserver((list) => { for (const e of list.getEntries()) s.loaf.push(e); })
+				.observe({ type: "long-animation-frame", buffered: false });
+		} catch (e) { s.noLoaf = true; }
+		setInterval(() => {
+			const secs = 5, n = Math.max(1, s.n);
+			const long = s.loaf.length, longMs = s.loaf.reduce((t, e) => t + e.duration, 0);
+			const render = s.loaf.reduce((t, e) => t + (e.startTime + e.duration - (e.renderStart || e.startTime + e.duration)), 0);
+			s.text = `${(s.n / secs).toFixed(1)} fps · step ${(s.step / n).toFixed(1)} ms · draw ${(s.draw / n).toFixed(1)} ms · ` +
+				(s.noLoaf ? "no LoAF" : `${long} frames > 50 ms (avg ${(longMs / Math.max(1, long)).toFixed(0)} ms, ${(render / Math.max(1, long)).toFixed(0)} ms render)`);
+			s.n = s.step = s.draw = 0; s.loaf = [];
+		}, 5000);
+		return s;
 	}
 });

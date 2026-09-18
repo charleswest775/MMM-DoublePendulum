@@ -81,9 +81,10 @@ A second instance of the module, showing only `atom`, makes a page of its own. W
 	position: "middle_center",
 	config: {
 		simulations: ["atom"],
-		cycleSeconds: 45,   // a new element this often, and each time the page comes round
+		cycleSeconds: 60,   // longer than the page is shown: one element per showing
 		width: 700,         // smaller than the chaos canvas: less to redraw, and room for the text
-		height: 700
+		height: 700,
+		fps: 12             // the electrons move slowly, so this is smooth; on a Pi 3, half the CPU of 20
 	}
 },
 {
@@ -124,7 +125,8 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `basins` (average over its sequence; ~7 while a picture is held) | 42 | 20 |
 | `logistic` | 73 | 17 |
 | `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
-| `atom` | *not yet measured* | |
+| `atom`, 700×700 at 12 fps (elements with four shells or more; ~33 for lighter ones, drawn smaller) | 78 | 12 |
+| `atom`, 700×700 at 20 fps | 150 | 20 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |

@@ -19,7 +19,9 @@ animations for his hallway mirror, as one page in a rotation of pages.
   caption. `data/elements.js` is generated (`tools/build-elements.js`);
   `data/element-history.js` (who / when / how / joined the table) is hand-written. After
   KristjanESPERANTO/MMM-AtomVisualizer, which is DOM + CSS animation: no fps cap, wrong for the Pi.
-  **Not yet measured on the Pi.**
+  Measured on the Pi: every electron moves, so the whole atom is redrawn and cost is fps × area:
+  ~150% at 20 fps, 78% at 12 fps (700² canvas), ~33% for atoms with under four shells. The mirror
+  runs it at 12 fps with orbits slow enough to look smooth.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing
   micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Preview the module without MagicMirror: serve the repo root (e.g. `npx serve` or
+     `python3 -m http.server`) and open /dev/preview.html. The stub below implements just
+     the parts of MagicMirror's Module API this module uses, including hide/show →
+     suspend/resume, so the page lifecycle can be exercised with the buttons.
+     Query options override config, e.g. ?simulations=lorenz&fps=30 -->
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MMM-ChaosTheory preview</title>
+	<link rel="stylesheet" href="../MMM-ChaosTheory.css">
+	<style>
+		body { margin: 0; background: #000; color: #fff; font-family: "Roboto Condensed", sans-serif; }
+		/* the mirror: portrait 1200×1920, scaled to fit the window */
+		#screen { width: 1200px; height: 1920px; transform-origin: 0 0; display: flex; justify-content: center; align-items: center; }
+		#controls { position: fixed; top: 8px; right: 8px; z-index: 1; font: 13px sans-serif; }
+		#controls button { margin-left: 4px; }
+		#stats { position: fixed; bottom: 8px; right: 8px; font: 12px monospace; color: #666; }
+		.module { transition: opacity 0.5s; }
+		.module.hidden { opacity: 0; }
+	</style>
+</head>
+<body>
+	<div id="controls">
+		<button id="hide">hide</button><button id="show">show</button><button id="next">next sim</button>
+	</div>
+	<div id="stats"></div>
+	<div id="screen"><div class="module MMM-ChaosTheory" id="module"></div></div>
+	<script>
+		const fit = () => {
+			const s = Math.min(innerWidth / 1200, innerHeight / 1920);
+			document.getElementById("screen").style.transform = `scale(${s})`;
+		};
+		addEventListener("resize", fit); fit();
+
+		window.Log = console;
+		let definition;
+		window.Module = { register: (name, def) => { definition = def; } };
+	</script>
+	<script src="../MMM-ChaosTheory.js"></script>
+	<script>
+		(async () => {
+			const q = new URLSearchParams(location.search);
+			const config = { ...definition.defaults };
+			for (const [k, v] of q) config[k] = k === "simulations" ? v.split(",") : isNaN(v) ? v : Number(v);
+			const m = Object.assign(Object.create(definition), { config, name: "MMM-ChaosTheory", hidden: false, data: {} });
+			m.file = (f) => `../${f}`;
+			for (const src of m.getScripts()) {
+				await new Promise((ok, fail) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+			}
+			m.start();
+			const el = document.getElementById("module");
+			el.append(m.getDom());
+			m.notificationReceived("DOM_OBJECTS_CREATED");
+			window.mod = m;
+
+			// same order as MagicMirror: suspend() after the fade-out, resume() after the fade-in
+			document.getElementById("hide").onclick = () => { m.hidden = true; el.classList.add("hidden"); setTimeout(() => m.suspend(), 500); };
+			document.getElementById("show").onclick = () => { m.hidden = false; el.classList.remove("hidden"); setTimeout(() => m.resume(), 500); };
+			document.getElementById("next").onclick = () => m.nextSim();
+
+			// frames actually drawn per second, and time spent in them
+			let frames = 0, busy = 0;
+			const frame = m.frame.bind(m);
+			m.frame = (now) => { const t0 = performance.now(); frame(now); busy += performance.now() - t0; frames++; };
+			setInterval(() => {
+				document.getElementById("stats").textContent = `${frames} fps · ${(busy / 10).toFixed(1)}% main thread in frame()`;
+				frames = 0; busy = 0;
+			}, 1000);
+		})();
+	</script>
+</body>
+</html>

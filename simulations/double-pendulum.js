@@ -3,7 +3,9 @@
  * Pure math in step(); all drawing in draw(), so the physics can be tested in Node.
  */
 (function (root) {
+	const { Trail } = root.ChaosCommon || require("./common.js");
 	const G = 9.81;
+	const K = [0, 1, 2, 3].map(() => new Float64Array(4)); // RK4 scratch, shared
 
 	class DoublePendulum {
 		constructor ({ color = "#ffffff", theta1, theta2, trailLength = 600 } = {}) {
@@ -17,39 +19,45 @@
 				0
 			]; // [θ1, ω1, θ2, ω2]
 			this.color = color;
-			this.trail = [];
-			this.trailLength = trailLength;
+			this.trail = new Trail(trailLength);
 			this.substep = 1 / 240; // fixed physics step, independent of frame rate
+			this.pending = 0;       // real time not yet integrated (less than one substep)
 		}
 
-		derivs ([t1, w1, t2, w2]) {
+		// [θ̇1, θ̈1, θ̇2, θ̈2] at state (t1, w1, t2, w2), written into out (no allocation: this runs
+		// four times per 1/240 s substep for every pendulum on screen)
+		derivs (t1, w1, t2, w2, out) {
 			const { m1, m2, l1, l2 } = this;
-			const d = t1 - t2;
+			const d = t1 - t2, sd = Math.sin(d), cd = Math.cos(d);
 			const den = 2 * m1 + m2 - m2 * Math.cos(2 * d);
-			const a1 = (-G * (2 * m1 + m2) * Math.sin(t1)
+			out[0] = w1;
+			out[1] = (-G * (2 * m1 + m2) * Math.sin(t1)
 				- m2 * G * Math.sin(t1 - 2 * t2)
-				- 2 * Math.sin(d) * m2 * (w2 * w2 * l2 + w1 * w1 * l1 * Math.cos(d))) / (l1 * den);
-			const a2 = (2 * Math.sin(d) * (w1 * w1 * l1 * (m1 + m2)
+				- 2 * sd * m2 * (w2 * w2 * l2 + w1 * w1 * l1 * cd)) / (l1 * den);
+			out[2] = w2;
+			out[3] = (2 * sd * (w1 * w1 * l1 * (m1 + m2)
 				+ G * (m1 + m2) * Math.cos(t1)
-				+ w2 * w2 * l2 * m2 * Math.cos(d))) / (l2 * den);
-			return [w1, a1, w2, a2];
+				+ w2 * w2 * l2 * m2 * cd)) / (l2 * den);
 		}
 
 		rk4 (h) {
-			const s = this.s;
-			const add = (a, b, k) => a.map((v, i) => v + b[i] * k);
-			const k1 = this.derivs(s);
-			const k2 = this.derivs(add(s, k1, h / 2));
-			const k3 = this.derivs(add(s, k2, h / 2));
-			const k4 = this.derivs(add(s, k3, h));
-			this.s = s.map((v, i) => v + (h / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+			const s = this.s, [k1, k2, k3, k4] = K;
+			this.derivs(s[0], s[1], s[2], s[3], k1);
+			this.derivs(s[0] + k1[0] * h / 2, s[1] + k1[1] * h / 2, s[2] + k1[2] * h / 2, s[3] + k1[3] * h / 2, k2);
+			this.derivs(s[0] + k2[0] * h / 2, s[1] + k2[1] * h / 2, s[2] + k2[2] * h / 2, s[3] + k2[3] * h / 2, k3);
+			this.derivs(s[0] + k3[0] * h, s[1] + k3[1] * h, s[2] + k3[2] * h, s[3] + k3[3] * h, k4);
+			for (let i = 0; i < 4; i++) s[i] += (h / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
 		}
 
 		step (dt) {
-			for (let t = 0; t < dt; t += this.substep) this.rk4(this.substep);
+			// accumulate so simulated time tracks real time exactly, whatever the frame timing
+			this.pending += dt;
+			while (this.pending >= this.substep) {
+				this.rk4(this.substep);
+				this.pending -= this.substep;
+			}
 			const [, , x2, y2] = this.positions();
-			this.trail.push([x2, y2]);
-			if (this.trail.length > this.trailLength) this.trail.shift();
+			this.trail.push(x2, y2);
 		}
 
 		positions () {
@@ -71,21 +79,9 @@
 			const scale = Math.min(w, h) / (2.2 * (this.l1 + this.l2));
 			const cx = w / 2, cy = h / 2;
 			const px = (x) => cx + x * scale, py = (y) => cy + y * scale;
-			ctx.clearRect(0, 0, w, h);
-
-			// trail: a few alpha bands instead of per-segment alpha (cheaper in software rendering)
-			const bands = 6, n = this.trail.length;
-			ctx.strokeStyle = this.color;
-			ctx.lineWidth = 1.5;
-			for (let b = 0; b < bands; b++) {
-				const from = Math.floor((b * n) / bands), to = Math.floor(((b + 1) * n) / bands);
-				if (to - from < 2) continue;
-				ctx.globalAlpha = 0.08 + 0.5 * ((b + 1) / bands);
-				ctx.beginPath();
-				ctx.moveTo(px(this.trail[from][0]), py(this.trail[from][1]));
-				for (let i = from + 1; i <= Math.min(to, n - 1); i++) ctx.lineTo(px(this.trail[i][0]), py(this.trail[i][1]));
-				ctx.stroke();
-			}
+			ctx.fillStyle = "#000";
+			ctx.fillRect(0, 0, w, h);
+			this.trail.draw(ctx, { color: this.color, lineWidth: 1.5, bands: 6, minAlpha: 0.08, maxAlpha: 0.58, map: (x, y) => [px(x), py(y)] });
 
 			// arms and bobs
 			const [x1, y1, x2, y2] = this.positions();
@@ -102,6 +98,7 @@
 	}
 
 	root.ChaosSimulations = root.ChaosSimulations || {};
+	DoublePendulum.info = { title: "The double pendulum", subtitle: "two arms, and no way to predict where they will be" };
 	root.ChaosSimulations.doublePendulum = DoublePendulum;
 	if (typeof module !== "undefined") module.exports = { DoublePendulum };
 })(typeof window !== "undefined" ? window : globalThis);

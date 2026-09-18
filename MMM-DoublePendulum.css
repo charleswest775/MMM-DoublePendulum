@@ -1,2 +1,67 @@
-.MMM-ChaosTheory .chaos-wrapper { display: flex; justify-content: center; }
+.MMM-ChaosTheory .chaos-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 .MMM-ChaosTheory .chaos-canvas { display: block; }
+
+.MMM-ChaosTheory .chaos-caption {
+	margin-top: 18px;
+	text-align: left;
+	color: #ccc;
+	line-height: 1.35;
+}
+
+.MMM-ChaosTheory .chaos-title {
+	font-size: 34px;
+	font-weight: 300;
+	color: #fff;
+	margin-bottom: 10px;
+}
+
+.MMM-ChaosTheory .chaos-subtitle {
+	display: block;
+	font-size: 18px;
+	color: #888;
+}
+
+.MMM-ChaosTheory .chaos-math {
+	font-family: "STIX Two Math", "Cambria Math", "DejaVu Serif", Georgia, serif;
+	font-style: italic;
+	font-size: 21px;
+	color: #ddd;
+	margin-bottom: 12px;
+}
+
+.MMM-ChaosTheory .chaos-math > div { margin: 6px 0; }
+
+.MMM-ChaosTheory .chaos-note {
+	font-family: "Roboto Condensed", sans-serif;
+	font-style: normal;
+	font-size: 16px;
+	color: #888;
+}
+
+.MMM-ChaosTheory .frac {
+	display: inline-flex;
+	flex-direction: column;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 0.85em;
+}
+
+.MMM-ChaosTheory .frac > span:first-child {
+	border-bottom: 1px solid currentcolor;
+	padding: 0 4px 2px;
+}
+
+.MMM-ChaosTheory .frac > span:last-child { padding-top: 2px; }
+
+.MMM-ChaosTheory .chaos-readout {
+	font-family: "DejaVu Sans Mono", Menlo, monospace;
+	font-size: 16px;
+	color: #aaa;
+	white-space: pre-wrap;
+	font-variant-numeric: tabular-nums;
+}

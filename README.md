@@ -158,6 +158,12 @@ depth; 2–6 s for the Julia spiral; Seahorse Valley 1 s at 2⁶ rising to 12 s 
 so tightly, |ρ| = 1.04, that escape times keep growing). With two workers the zoom keeps its
 2 s per doubling for most of a 30 s showing and slows down where it can't.
 
+On the mirror (see [Performance](#performance)) the drawing alone costs ~130% of a core at
+12 fps: a stretched 700×700 image every frame, where the atom only redraws what moves. The
+workers add ~25% each on the cheap dives and up to ~100% each on Seahorse Valley and the Julia
+spiral. The Pi ran at 70–73 °C through the measurements. With the page hidden, the workers use
+nothing.
+
 ## Performance
 
 Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canvas, 20 fps),
@@ -174,7 +180,8 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
 | `atom`, 700×700 at 12 fps (elements with four shells or more; ~33 for lighter ones, drawn smaller) | 78 | 12 |
 | `atom`, 700×700 at 20 fps | 150 | 20 |
-| `zoom`, 700×700 at 12 fps, 2 workers | *not yet measured* | |
+| `zoom`, 700×700 at 12 fps, 2 workers (first 30 s of a dive: Elephant Valley, the star, the north bulb) | 155–168 | 13 |
+| `zoom`, the same, Seahorse Valley / the Julia spiral | 234 / 270 | 13 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |

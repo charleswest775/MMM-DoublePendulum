@@ -26,7 +26,8 @@ animations for his hallway mirror, as one page in a rotation of pages.
   its own (`classes: "page-fractal"`). `simulations/zoom-math.js` (escape times, Misiurewicz
   targets by Newton, colours) is shared with `zoom-worker.js`; keyframes per doubling are
   rendered by web workers, and `zoom.js` draws two of them scaled each frame. Full-canvas
-  redraw every frame, plus 1–2 cores of workers while shown. The module calls `sim.dispose()`
+  redraw every frame, plus 1–2 cores of workers while shown. Measured on the Pi (700², 12 fps,
+  2 workers): 155–270% of a core, ~130% of it drawing; 70–73 °C; workers 0% when hidden. The module calls `sim.dispose()`
   (if present) when it replaces a sim, which terminates the workers.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing

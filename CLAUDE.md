@@ -35,7 +35,9 @@ animations for his hallway mirror, as one page in a rotation of pages.
   serves `~/mirror-photos` on the Pi (list + files, dates from EXIF via `photo-index.js`).
   **The photos are private: never commit them to this public repo.** Charles's curated
   originals live in `~/Pictures/Mirror` on the Mac; `mac/sync-mirror-photos.sh` in the setup
-  repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi.
+  repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi. Measured: ~1% of a
+  core while a photo is held (spike ~150% for the 2 s it appears); the mirror rotates chaos →
+  photo → atom → photo → fractal → photo, 20 s per photo.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

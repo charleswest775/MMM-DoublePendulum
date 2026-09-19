@@ -168,8 +168,8 @@ nothing.
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
-rest, without the screen going empty. Once the photo is drawn the module rests, and costs no
-more than a hidden one.
+rest, without the screen going empty. Once the photo is drawn the module rests: measured on
+the mirror, ~1% of a core while a photo is held, against 75–330% for the animations around it.
 
 ```js
 {
@@ -179,7 +179,7 @@ more than a hidden one.
 	config: {
 		simulations: ["photos"],
 		cycleSeconds: 3600,  // a new photo each time the page is shown
-		width: 1100,
+		width: 900,          // on a landscape screen, wider photos reach the clock in the corner
 		height: 1000,
 		fps: 4               // only matters for the moment before the photo is drawn
 	}
@@ -221,6 +221,7 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `atom`, 700×700 at 20 fps | 150 | 20 |
 | `zoom`, 700×700 at 12 fps, 2 workers (first 30 s of a dive: Elephant Valley, the star, the north bulb) | 155–168 | 13 |
 | `zoom`, the same, Seahorse Valley / the Julia spiral | 234 / 270 | 13 |
+| `photos`, 900×1000, while the photo is held (a spike to ~150 for the 2 s it takes to appear) | 1 | 0 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |

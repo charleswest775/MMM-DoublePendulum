@@ -22,6 +22,12 @@ animations for his hallway mirror, as one page in a rotation of pages.
   Measured on the Pi: every electron moves, so the whole atom is redrawn and cost is fps × area:
   ~150% at 20 fps, 78% at 12 fps (700² canvas), ~33% for atoms with under four shells. The mirror
   runs it at 12 fps with orbits slow enough to look smooth.
+- `zoom` is not chaos either: an infinite zoom into the Mandelbrot set / Julia sets, a page of
+  its own (`classes: "page-fractal"`). `simulations/zoom-math.js` (escape times, Misiurewicz
+  targets by Newton, colours) is shared with `zoom-worker.js`; keyframes per doubling are
+  rendered by web workers, and `zoom.js` draws two of them scaled each frame. Full-canvas
+  redraw every frame, plus 1–2 cores of workers while shown. The module calls `sim.dispose()`
+  (if present) when it replaces a sim, which terminates the workers.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing
   micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.

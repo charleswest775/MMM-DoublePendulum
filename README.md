@@ -13,10 +13,12 @@ cycling through five simulations, each with its equations and live numbers under
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
-And one that isn't chaos, meant for a page of its own (see [An atom page](#an-atom-page)):
+And two that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page)
+and [A fractal page](#a-fractal-page)):
 
 | key | what you see |
 |---|---|
+| `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 
 Built for a **Raspberry Pi 3 without GPU acceleration**: everything is drawn by the CPU, so the
@@ -60,6 +62,9 @@ No npm dependencies.
 | `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
 | `atomElements` | `[]` | `atom`: symbols to show, e.g. `["H", "Fe", "Au"]`. Empty = all 118 |
 | `atomOrder` | `"shuffle"` | `atom`: `"sequence"` goes through them by atomic number |
+| `zoomTargets` | `[]` | `zoom`: which dives, e.g. `["seahorse", "elephant"]`. Empty = all five: `seahorse`, `julia-spiral`, `elephant`, `star`, `north` |
+| `zoomSeconds` | `2` | `zoom`: seconds per doubling of the magnification, at most. The zoom slows down when keyframes can't keep up |
+| `zoomWorkers` | `2` | `zoom`: how many of the Pi's four cores render keyframes |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
@@ -111,6 +116,48 @@ module's canvas, so the frame cap and `suspend()` apply. `data/elements.js` is d
 data (`tools/build-elements.js`), originally from
 [Periodic-Table-JSON](https://github.com/Bowserinator/Periodic-Table-JSON) (CC BY-SA 3.0).
 
+## A fractal page
+
+The same way, a third instance showing only `zoom`:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-fractal",
+	position: "middle_center",
+	config: {
+		simulations: ["zoom"],
+		cycleSeconds: 600,  // a new dive each time the page is shown
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each dive heads for a point exactly on the fractal's edge, so there is detail at every scale:
+a Misiurewicz point of the Mandelbrot set, where the orbit of 0 lands on a repelling cycle
+(found to full precision by Newton's method, and checked by the tests), or the repelling fixed
+point of a Julia set. Near such a point the picture repeats itself, magnified by the cycle's
+multiplier |ρ| and turned by its angle, so the zoom could go on for ever; what stops it is
+arithmetic. A double carries 53 bits, and at about 2³⁴ (10¹⁰×) neighbouring pixels would be
+only a thousand units in the last place apart. There the dive ends and holds its last picture,
+which costs nothing to show. Going deeper would take perturbation theory and arbitrary
+precision, a different program.
+
+Colour is the smooth escape time ν = n + 1 − log₂ log<sub>R</sub>|z<sub>n</sub>| on a cyclic
+gradient, in log ν, so the bands stay about as wide at every depth while the escape times grow;
+black never escapes. The iteration limit follows the escape times: twice what all but one pixel
+in a thousand of the last keyframe needed.
+
+How it's drawn: web workers (`zoomWorkers`, on other cores) render a keyframe of the canvas's
+size for every doubling, a few ahead. Each frame stretches one keyframe by up to 2× and draws
+the next one in, sharp, over the middle, so the centre never looks enlarged. Keyframe times on
+the Pi, per core, 700×700: 0.3–1.5 s for Elephant Valley, the star and the north bulb at any
+depth; 2–6 s for the Julia spiral; Seahorse Valley 1 s at 2⁶ rising to 12 s at 2³⁰ (it spirals
+so tightly, |ρ| = 1.04, that escape times keep growing). With two workers the zoom keeps its
+2 s per doubling for most of a 30 s showing and slows down where it can't.
+
 ## Performance
 
 Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canvas, 20 fps),
@@ -127,6 +174,7 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
 | `atom`, 700×700 at 12 fps (elements with four shells or more; ~33 for lighter ones, drawn smaller) | 78 | 12 |
 | `atom`, 700×700 at 20 fps | 150 | 20 |
+| `zoom`, 700×700 at 12 fps, 2 workers | *not yet measured* | |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |
@@ -161,7 +209,10 @@ the Lorenz fixed points and Lyapunov exponent (≈ 0.906), exponential divergenc
 pendulums, the logistic map's bifurcation points and Feigenbaum ratio, the basins' three-fold
 symmetry and convergence under a finer time step, the icons' n-fold symmetry, and for the atom
 that every element's shells hold Z electrons, the periods obey T² ∝ r³, and every element has
-its history.
+its history. For the zoom: escape times, that each Mandelbrot target is a Misiurewicz point of
+exactly its preperiod and period with a repelling cycle and each Julia target a repelling fixed
+point, that the deepest view is still resolvable in 64 bits, and that the zoom never runs ahead
+of its keyframes.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order.

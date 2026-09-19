@@ -27,7 +27,9 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/icons.js",
 			"data/elements.js",
 			"data/element-history.js",
-			"simulations/atom.js"
+			"simulations/atom.js",
+			"simulations/zoom-math.js",
+			"simulations/zoom.js"
 		].map((f) => this.file(f));
 	},
 
@@ -117,6 +119,7 @@ Module.register("MMM-ChaosTheory", {
 	},
 
 	useSim (Sim) {
+		if (this.sim && this.sim.dispose) this.sim.dispose(); // e.g. zoom's workers
 		// sims pick their own options out of the module config
 		this.sim = new Sim({ ...this.config, file: (f) => this.file(f) });
 		this.startedAt = performance.now();

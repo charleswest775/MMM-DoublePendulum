@@ -29,7 +29,8 @@ Module.register("MMM-ChaosTheory", {
 			"data/element-history.js",
 			"simulations/atom.js",
 			"simulations/zoom-math.js",
-			"simulations/zoom.js"
+			"simulations/zoom.js",
+			"simulations/photos.js"
 		].map((f) => this.file(f));
 	},
 

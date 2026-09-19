@@ -13,13 +13,14 @@ cycling through five simulations, each with its equations and live numbers under
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
-And two that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page)
-and [A fractal page](#a-fractal-page)):
+And three that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
+[A fractal page](#a-fractal-page) and [A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
+| `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
 
 Built for a **Raspberry Pi 3 without GPU acceleration**: everything is drawn by the CPU, so the
 drawing is designed around what that costs (see [Performance](#performance)), and the animation
@@ -164,6 +165,44 @@ workers add ~25% each on the cheap dives and up to ~100% each on Seahorse Valley
 spiral. The Pi ran at 70–73 °C through the measurements. With the page hidden, the workers use
 nothing.
 
+## A photo page
+
+A page that shows one photo, still, between the animations: after an animation the Pi gets a
+rest, without the screen going empty. Once the photo is drawn the module rests, and costs no
+more than a hidden one.
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-photos",
+	position: "middle_center",
+	config: {
+		simulations: ["photos"],
+		cycleSeconds: 3600,  // a new photo each time the page is shown
+		width: 1100,
+		height: 1000,
+		fps: 4               // only matters for the moment before the photo is drawn
+	}
+}
+```
+
+List the class on more than one page, e.g.
+`modules: [["page-chaos"], ["page-photos"], ["page-atom"], ["page-photos"]]`, and each
+showing brings the next photo. They're shuffled; each is shown once before any repeats.
+
+The photos come from `~/mirror-photos` on the mirror (or the folder in the `MIRROR_PHOTOS`
+environment variable): JPEG, PNG or WebP, served by the module's `node_helper`. **Resize them
+beforehand**: decoding a 12-megapixel phone photo takes the Pi far longer than decoding one
+of about the canvas's size. The date under the photo comes from its EXIF (`DateTimeOriginal`);
+without one the photo has no caption. On a Mac, for example:
+
+```bash
+sips -s format jpeg -s formatOptions 85 -Z 1600 IMG_1234.HEIC --out ~/resized/IMG_1234.jpg
+rsync -a ~/resized/ pi@mirror.local:mirror-photos/
+```
+
+`sips` keeps the EXIF, including the orientation, which Chromium applies when drawing.
+
 ## Performance
 
 Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canvas, 20 fps),
@@ -207,7 +246,7 @@ a Mac): at ~3.5 ms per pixel, a Pi 3 would need 47 minutes of CPU for one.
 
 ```bash
 npm test                     # physics checks (node --test, no dependencies)
-python3 -m http.server 8765  # then open http://localhost:8765/dev/preview.html
+node dev/serve.js            # then open http://localhost:8765/dev/preview.html
 node tools/render-basins.js  # re-render assets/basins-*.png after changing the magnetic pendulum
 ```
 
@@ -222,7 +261,9 @@ point, that the deepest view is still resolvable in 64 bits, and that the zoom n
 of its keyframes.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
-hide/show buttons that follow MagicMirror's suspend/resume order.
+hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves
+the photo page's photos, from `~/Pictures/Mirror` or the folder given as its first argument:
+`?simulations=photos&width=1100&height=1000`.
 
 ## License
 

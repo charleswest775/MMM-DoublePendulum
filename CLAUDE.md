@@ -29,8 +29,16 @@ animations for his hallway mirror, as one page in a rotation of pages.
   redraw every frame, plus 1–2 cores of workers while shown. Measured on the Pi (700², 12 fps,
   2 workers): 155–270% of a core, ~130% of it drawing; 70–73 °C; workers 0% when hidden. The module calls `sim.dispose()`
   (if present) when it replaces a sim, which terminates the workers.
+- `photos` is not chaos: one of Charles's photos per showing, held still (the sim rests once
+  drawn), date taken drawn under it. A page of its own (`classes: "page-photos"`), listed
+  between the animation pages so the Pi gets its rest without an empty screen. `node_helper.js`
+  serves `~/mirror-photos` on the Pi (list + files, dates from EXIF via `photo-index.js`).
+  **The photos are private: never commit them to this public repo.** Charles's curated
+  originals live in `~/Pictures/Mirror` on the Mac; `mac/sync-mirror-photos.sh` in the setup
+  repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
-- `dev/preview.html` runs the module in a desktop browser; `dev/bench.js` holds drawing
+- `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
+  which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing
   micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.
 
 ## Performance findings on the Pi (measured, see README)

@@ -1,4 +1,5 @@
-/* Server side of MMM-ChaosTheory: samples what the mirror costs, for the stats panel.
+/* Server side of MMM-ChaosTheory: serves the photo page's pictures, and samples what the
+ * mirror costs, for the stats panel.
  * Reads /proc and the thermal sensor (Linux only; elsewhere it reports what it can).
  * Samples only between CHAOS_STATS_START and CHAOS_STATS_STOP, i.e. while the module is shown.
  * With several instances (say one per MMM-pages page) one may start before the last has
@@ -6,7 +7,13 @@
  */
 const NodeHelper = require("node_helper");
 const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { listPhotos } = require("./photo-index.js");
+
+// where mac/sync-mirror-photos.sh (in the mirror's setup repo) puts the resized photos
+const PHOTO_DIR = process.env.MIRROR_PHOTOS || path.join(os.homedir(), "mirror-photos");
 
 let HZ = 100;
 // stderr ignored: by default execFileSync relays it to ours, and under pm2 that write fails
@@ -35,6 +42,15 @@ module.exports = NodeHelper.create({
 	start () {
 		this.timer = null;
 		this.watchers = new Set();
+		// the photos page: the list (re-read each time, so newly synced photos turn up), then
+		// each file. CORS on the list lets dev/preview.html on the Mac show the Pi's photos.
+		this.expressApp.get("/MMM-ChaosTheory/photos/", (req, res) => {
+			res.set("Access-Control-Allow-Origin", "*").json(listPhotos(PHOTO_DIR));
+		});
+		this.expressApp.get("/MMM-ChaosTheory/photos/:name", (req, res) => {
+			const name = path.basename(req.params.name); // nothing outside the folder
+			res.sendFile(path.join(PHOTO_DIR, name), { maxAge: "1d" }, (err) => err && !res.headersSent && res.sendStatus(404));
+		});
 	},
 
 	socketNotificationReceived (notification, payload) {

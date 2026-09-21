@@ -186,6 +186,11 @@ the mirror, ~1% of a core while a photo is held, against 75–330% for the anima
 }
 ```
 
+MagicMirror calls `resume()` only after a page has faded in, so the module clears its canvas
+when it's hidden instead — otherwise the last picture would be what fades in. The photo page
+goes further: it picks and draws its next photo while hidden, ready to be faded in. (The
+simulations can't: they would animate, and `zoom` would run its workers, unseen.)
+
 List the class on more than one page, e.g.
 `modules: [["page-chaos"], ["page-photos"], ["page-atom"], ["page-photos"]]`, and each
 showing brings the next photo. They're shuffled; each is shown once before any repeats.

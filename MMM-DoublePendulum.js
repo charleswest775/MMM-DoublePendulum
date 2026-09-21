@@ -45,6 +45,8 @@ Module.register("MMM-ChaosTheory", {
 		this.timer = null;   // pending setTimeout
 		this.rafId = null;   // pending requestAnimationFrame
 		this.running = false;
+		this.prepared = false; // the next simulation is ready, chosen while we were hidden
+		this.primer = null;    // pending attempt to draw it
 		this.lastFrame = 0;
 		this.startedAt = 0;
 		this.lastReadout = 0;
@@ -97,15 +99,46 @@ Module.register("MMM-ChaosTheory", {
 
 	// Called by MagicMirror after the module's hide/show animation (MMM-pages uses hide/show).
 	suspend () {
+		if (!this.running) return;
 		this.pause();
+		// resume() comes only after the fade-in, so anything left on the canvas would be what
+		// the page fades in on, for half a second, before the new picture replaces it. Clear it
+		// here instead, while we are invisible.
+		this.clear();
+		// Better still, if the next picture can be prepared cheaply while hidden (a photo: it
+		// has to be loaded anyway, and then costs nothing to hold), switch to it now and draw
+		// it, so the page fades in on the new picture. Not for the simulations, which would
+		// then animate — or, in zoom's case, run its workers — with nobody looking.
+		const Next = this.peek();
+		if (Next && Next.preloadWhileHidden) {
+			this.nextSim();
+			this.prepared = true;
+			this.prime();
+		}
 	},
 
 	resume () {
 		// MMM-pages calls show() on every module of the current page at each rotation,
 		// so only move on if we were actually stopped.
 		if (this.running) return;
-		this.nextSim(); // something different each time the page comes round
+		if (!this.prepared) this.nextSim(); // something different each time the page comes round
+		this.prepared = false;
 		this.play();
+	},
+
+	// what nextSim() would show next, without moving on
+	peek () {
+		const names = this.config.simulations;
+		return (window.ChaosSimulations || {})[names[(this.simIndex + 1) % names.length]];
+	},
+
+	// Draw the prepared picture while hidden, once it has something to draw (a photo has to
+	// load first), then leave it there. Gives up after 10 s: the page may never come back.
+	prime (tries = 40) {
+		if (this.running || !this.sim) return;
+		this.sim.step(0);
+		this.sim.draw(this.ctx, this.canvas.width, this.canvas.height);
+		if (!this.sim.resting && tries > 0) this.primer = setTimeout(() => this.prime(tries - 1), 250);
 	},
 
 	nextSim () {
@@ -129,7 +162,17 @@ Module.register("MMM-ChaosTheory", {
 		this.titleEl.innerHTML = info.title ? `${info.title}<span class="chaos-subtitle">${info.subtitle || ""}</span>` : "";
 		this.mathEl.innerHTML = (info.equations || []).map((l) => `<div>${l}</div>`).join("");
 		this.readoutEl.innerHTML = this.readoutHtml = "";
-		// clear whatever the previous simulation left behind
+		this.clearCanvas(); // whatever the previous simulation left behind
+	},
+
+	// nothing of the last simulation left: neither its picture nor its words
+	clear () {
+		this.clearCanvas();
+		this.titleEl.innerHTML = this.mathEl.innerHTML = "";
+		this.readoutEl.innerHTML = this.readoutHtml = "";
+	},
+
+	clearCanvas () {
 		this.ctx.globalAlpha = 1;
 		this.ctx.fillStyle = "#000";
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -138,6 +181,8 @@ Module.register("MMM-ChaosTheory", {
 	play () {
 		if (this.running || !this.canvas || !this.sim) return;
 		this.running = true;
+		clearTimeout(this.primer);
+		this.startedAt = performance.now(); // cycleSeconds counts time on screen
 		if (this.panel) this.sendSocketNotification("CHAOS_STATS_START", { interval: 2000, id: this.identifier });
 		this.lastFrame = performance.now();
 		this.schedule();
@@ -147,6 +192,7 @@ Module.register("MMM-ChaosTheory", {
 		if (this.running && this.panel) this.sendSocketNotification("CHAOS_STATS_STOP", { id: this.identifier });
 		this.running = false;
 		clearTimeout(this.timer);
+		clearTimeout(this.primer);
 		cancelAnimationFrame(this.rafId);
 		this.timer = this.rafId = null;
 	},

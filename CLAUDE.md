@@ -73,6 +73,11 @@ animations for his hallway mirror, as one page in a rotation of pages.
   (`simulations/hat.js`: the paper's H/T/P/F metatile substitution after Kaplan's code; tests
   check no overlaps/gaps and 4, 25, 169, 1156 hats per level). Laid in a spiral in 22 s, then
   rests: ~1% of the canvas changes per frame. Not yet measured on the Pi.
+- `snow` is not chaos: a snow crystal grown live in Reiter's model (`simulations/snow-model.js`,
+  a twelfth of the hex grid, tested against the whole grid), a page of its own
+  (`classes: "page-snow"`, for winter). Five habits, random β/γ within each; paced to grow in 20 s
+  within 14 ms of model per frame; redrawn 5×/s over the crystal's square (~31% of the canvas),
+  then rests. Not yet measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

@@ -16,7 +16,7 @@ A new simulation starts every `cycleSeconds`, and each time the module is shown 
 And some that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
 [A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page),
 [A planets' dance page](#a-planets-dance-page), [A Chladni page](#a-chladni-page),
-[A tilings page](#a-tilings-page) and [A photo page](#a-photo-page)):
+[A tilings page](#a-tilings-page), [A snow page](#a-snow-page) and [A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
@@ -25,6 +25,7 @@ And some that aren't chaos, each meant for a page of its own (see [An atom page]
 | `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
 | `chladni` | **Chladni figures.** Sand scattered on a square plate with free edges; the plate sings one of its modes, the grains hop off the parts that move and come to rest on the lines that don't, and the figure appears. Then it holds. 49 figures, one per showing, with the note a real steel plate would sound and the story of the figures (Chladni, Napoleon's prize, Sophie Germain, Ritz). |
 | `tilings` | **Tilings that never repeat.** Laid tile by tile, round and round from the centre, then held: a Penrose tiling (a new one every time), the Ammann–Beenker, a heptagonal or a dodecagonal one, Escher's *Circle Limit* (the hyperbolic plane in Poincaré's disc, five ways), or the hat, the single tile found in 2022 that covers the plane only without repeating. |
+| `snow` | **A snow crystal**, grown live in Reiter's model from one frozen cell: a hexagonal, stellar or sectored plate, a stellar dendrite or a fern, never the same twice, with the stories of Kepler, Bentley and Nakaya. It grows in 20 s, then holds. For winter. |
 | `orbital` | **The quantum atom.** Hydrogen's electron in one of 30 states, shown the only way it can be seen: one measurement at a time, each dot a place it was found, with probability \|ψ\|². The picture develops like a long exposure, lobes coloured by ψ's sign, around Bohr's orbit for the same energy (dashed). Meant to share the atom's page. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
@@ -79,6 +80,7 @@ No npm dependencies.
 | `sacredSeed` | none | `sacred`: draw this figure every time, by the number shown under it, e.g. `"3A7F21C0"` |
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
+| `snowSeconds` | `20` | `snow`: seconds to grow a crystal; then it holds |
 | `tilingsSeconds` | `22` | `tilings`: seconds to lay a tiling; then it holds |
 | `orbitsSeconds` | `22` | `orbits`: seconds to draw a figure; then it holds |
 | `chladniSeconds` | `14` | `chladni`: the longest the plate sings; it stops sooner once the sand has settled (8–12 s) |
@@ -440,6 +442,46 @@ hat's counts, congruence and ratio.
 For the Pi: drawn in a spiral, a frame's new tiles lie together: on average about 1% of the
 canvas changes per frame, the least of any page, then the sim rests. Not yet measured on the Pi.
 
+## A snow page
+
+Another instance, showing only `snow` (in winter, say):
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-snow",
+	position: "middle_center",
+	config: {
+		simulations: ["snow"],
+		cycleSeconds: 600,  // one crystal per showing
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each showing grows a new crystal in Reiter's cellular model (C. A. Reiter, *Chaos, Solitons &
+Fractals*, 2005). A hexagonal grid of cells holds water; a cell is ice when it holds 1 or more,
+and receptive when it is ice or touches ice. Each step, receptive cells keep their water and
+gain γ, vapour arriving from outside the plane; the others diffuse, u ← u + (α/2)(ū − u), with
+receptive neighbours absorbing what reaches them; far away the vapour is held at β. From one
+frozen cell the crystal grows: less vapour around it and more at its surface make plates, more
+vapour branches. Each showing picks one of five habits (hexagonal plate, stellar plate,
+sectored plate, stellar dendrite, fern) and random β and γ within it, so no two are alike. Brighter
+ice holds more water: the ridges along the arms. It grows to the edge of the picture in 20 s,
+quickly at first, and holds; the caption tells one of five stories (Kepler's New Year's gift of
+1611, Bentley's photographs, Nakaya's artificial snow, why branches, why the arms match).
+
+The crystal keeps the grid's twelve symmetries, so `simulations/snow-model.js` computes a twelfth
+of it, cells with axial coordinates 0 ≤ r ≤ q, their neighbours outside that wedge mapped back
+into it. The tests check that this gives exactly (to 10⁻¹²) what the whole grid does, that the
+wedge stands for every cell once, and that plates fill their hexagon and dendrites don't.
+
+For the Pi: a few hundred to a few thousand steps of a 5,700-cell wedge, paced to finish in 20 s
+and never more than 14 ms a frame; the picture redrawn 5 times a second, only as far as the
+crystal reaches (31% of the canvas on average); then it rests. Not yet measured on the Pi.
+
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
@@ -559,7 +601,8 @@ of the lowest modes, the data file against a fresh solve, and the sand on the no
 the quantum atom: the special functions, the radial functions' normalisation, nodes and
 orthogonality, ⟨r⟩, the circular states' radius, nodal planes and cones, and Born's rule in the
 sampling. For the tilings: no overlaps or gaps, the rhombs' sides, areas and proportions,
-hyperbolic congruence, and the hat's Fibonacci counts and φ⁴ ratio.
+hyperbolic congruence, and the hat's Fibonacci counts and φ⁴ ratio. For the snow crystal: a
+twelfth of the grid against all of it, the symmetry bookkeeping, and plates against dendrites.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

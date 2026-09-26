@@ -40,7 +40,9 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/chladni.js",
 			"simulations/orbital.js",
 			"simulations/hat.js",
-			"simulations/tilings.js"
+			"simulations/tilings.js",
+			"simulations/snow-model.js",
+			"simulations/snow.js"
 		].map((f) => this.file(f));
 	},
 

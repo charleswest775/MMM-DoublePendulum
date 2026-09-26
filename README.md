@@ -238,9 +238,12 @@ black around a glowing centre), [evoluteur/sacred-geometry](https://github.com/e
 OmniGeometry.
 
 For the Pi, each frame adds only what the pens drew since the last one, and once the figure is
-finished the sim rests: holding it should cost next to nothing, as holding a photo does. While drawing, the pens are
-spread round the figure, so a frame's changes span much of it, as the atom's do. Not measured
-on the mirror yet.
+finished the sim rests. Measured on the mirror over six showings (see [Performance](#performance)):
+~42% of a core while a figure is being drawn (27–63% in 3-s windows: the pens are spread round
+the figure, so a frame's changes span much of it), ~117% for the first 3 s as the page fades in
+and the glow with it, then ~3% while the finished figure is held, most of that the stats panel.
+Over a 30 s showing, ~41%: the cheapest of the animated pages. It holds 12 fps throughout, so
+the figure is finished on time, ~24 s after the page appears.
 
 ## A photo page
 
@@ -304,6 +307,8 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `zoom`, 700×700 at 12 fps, 2 workers (first 30 s of a dive: Elephant Valley, the star, the north bulb) | 155–168 | 13 |
 | `zoom`, the same, Seahorse Valley / the Julia spiral | 234 / 270 | 13 |
 | `photos`, 900×1000, while the photo is held (a spike to ~150 for the 2 s it takes to appear) | 1 | 0 |
+| `sacred`, 700×700 at 12 fps, while a figure is drawn (~117 for the first 3 s, the page's fade-in and the glow; 27–63 in 3-s windows) | 42 | 12 |
+| `sacred`, the finished figure held, with the stats panel on | 3 | 0 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |

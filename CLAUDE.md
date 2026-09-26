@@ -44,7 +44,9 @@ animations for his hallway mirror, as one page in a rotation of pages.
   rose, spirals, lotus — then bands and a rim) as layers → steps → strokes in unit coordinates;
   `sacred.js` draws it stroke by stroke from the centre out, every symmetric copy at once,
   incrementally with `lighter` compositing, then rests. The seed is shown under the figure;
-  `sacredSeed` redraws it; `dev/sacred-gallery.html` shows many at once. Not yet measured on the Pi.
+  `sacredSeed` redraws it; `dev/sacred-gallery.html` shows many at once. Measured on the Pi (700²,
+  12 fps, six showings): ~42% of a core while drawing (~117% for the first 3 s of fade-in and
+  glow), ~3% once held (stats panel); ~41% over a 30 s showing, 12 fps held, done ~24 s in.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

@@ -1,11 +1,11 @@
 {
   "name": "mmm-chaostheory",
-  "version": "0.3.0",
-  "description": "MagicMirror² module: animated chaos-theory simulations (Lorenz attractor, diverging pendulums, fractal basins, logistic map, symmetric icons), a Bohr-style atom with each element's discovery story, and sacred geometry drawn with compass and straightedge.",
+  "version": "0.4.0",
+  "description": "MagicMirror² module: animated chaos-theory simulations (Lorenz attractor, diverging pendulums, fractal basins, logistic map, symmetric icons, the three-body problem, chaotic billiards, rule 30), and pages of physics and mathematics: a Bohr-style atom and hydrogen's orbitals, a fractal zoom, sacred geometry, the planets' dance, Chladni figures, aperiodic and hyperbolic tilings, snow crystals, and tonight's sky.",
   "main": "MMM-ChaosTheory.js",
   "scripts": {
     "test": "node --test"
   },
-  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics", "sacred geometry", "orbits", "chladni"],
+  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics", "sacred geometry", "orbits", "chladni", "quasicrystal", "hyperbolic", "snowflake", "star chart", "three-body"],
   "license": "MIT"
 }

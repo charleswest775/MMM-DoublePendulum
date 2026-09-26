@@ -3,7 +3,7 @@
 Charles's own MagicMirror² module. Goal: beautiful, *physically correct* chaos-theory
 animations for his hallway mirror, as one page in a rotation of pages.
 
-## What exists (v0.3.0)
+## What exists (v0.4.0)
 
 - `MMM-ChaosTheory.js` — module shell: one canvas plus an HTML caption (equations + live
   readout, updated 2×/s). Cycles through `config.simulations` every `cycleSeconds` and on each

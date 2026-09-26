@@ -586,6 +586,20 @@ rsync -a ~/resized/ pi@mirror.local:mirror-photos/
 
 `sips` keeps the EXIF, including the orientation, which Chromium applies when drawing.
 
+## Putting pages together
+
+Every page added makes the rotation longer. An instance moves on to its next simulation each time
+its page comes round, so pages can share a slot instead, taking turns:
+
+```js
+simulations: ["atom", "orbital"]              // Bohr's atom, then Schrödinger's
+simulations: ["sacred", "tilings", "orbits"]  // three kinds of figure that draw themselves and hold
+```
+
+The pages that draw a picture and then hold it (sacred, orbits, tilings, sky, snow, chladni once
+its sand has settled) cost the Pi little after their first 10–25 s; the sky page, once drawn,
+rests it as well as a photo does. The zoom is the costly one.
+
 ## Performance
 
 Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canvas, 20 fps),

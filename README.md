@@ -19,12 +19,14 @@ A new simulation starts every `cycleSeconds`, and each time the module is shown 
 And some that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
 [A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page),
 [A planets' dance page](#a-planets-dance-page), [A Chladni page](#a-chladni-page),
-[A tilings page](#a-tilings-page), [A snow page](#a-snow-page) and [A photo page](#a-photo-page)):
+[A tilings page](#a-tilings-page), [A snow page](#a-snow-page), [A sky page](#a-sky-page) and
+[A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
+| `sky` | **The sky over the mirror, tonight.** The whole sky as a circle, overhead at the centre, the horizon at the rim: 2,855 stars sized by brightness and coloured by temperature, the 88 constellation figures drawn in one by one, the planets where they are, and the Moon in its phase, lit from the Sun's side. By day, tonight's sky as soon as it's dark. Underneath: the Moon's and planets' risings, sunset, a named full moon, and one star's story. |
 | `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
 | `chladni` | **Chladni figures.** Sand scattered on a square plate with free edges; the plate sings one of its modes, the grains hop off the parts that move and come to rest on the lines that don't, and the figure appears. Then it holds. 49 figures, one per showing, with the note a real steel plate would sound and the story of the figures (Chladni, Napoleon's prize, Sophie Germain, Ritz). |
 | `tilings` | **Tilings that never repeat.** Laid tile by tile, round and round from the centre, then held: a Penrose tiling (a new one every time), the Ammann–Beenker, a heptagonal or a dodecagonal one, Escher's *Circle Limit* (the hyperbolic plane in Poincaré's disc, five ways), or the hat, the single tile found in 2022 that covers the plane only without repeating. |
@@ -85,6 +87,8 @@ No npm dependencies.
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
 | `snowSeconds` | `20` | `snow`: seconds to grow a crystal; then it holds |
+| `skyLatitude`, `skyLongitude` | Greenwich | `sky`: where the mirror is, in degrees (north and east positive), e.g. `39.53`, `-119.81` |
+| `skyPlace` | `"Greenwich"` | `sky`: its name, for the title: "The sky over Reno" |
 | `tilingsSeconds` | `22` | `tilings`: seconds to lay a tiling; then it holds |
 | `orbitsSeconds` | `22` | `orbits`: seconds to draw a figure; then it holds |
 | `chladniSeconds` | `14` | `chladni`: the longest the plate sings; it stops sooner once the sand has settled (8–12 s) |
@@ -297,6 +301,59 @@ the figure, so a frame's changes span much of it), ~117% for the first 3 s as th
 and the glow with it, then ~3% while the finished figure is held, most of that the stats panel.
 Over a 30 s showing, ~41%: the cheapest of the animated pages. It holds 12 fps throughout, so
 the figure is finished on time, ~24 s after the page appears.
+
+## A sky page
+
+Another instance, showing only `sky`, told where it is:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-sky",
+	position: "middle_center",
+	config: {
+		simulations: ["sky"],
+		cycleSeconds: 600,      // a fresh chart each showing
+		skyLatitude: 39.5296,   // Reno
+		skyLongitude: -119.8138,
+		skyPlace: "Reno",
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+The whole sky as a circle, as seen lying on your back with your head to the north: the point
+overhead at the centre, the horizon at the rim, north at the top and east on the left, in a
+stereographic projection, which keeps the constellations' shapes. After dark it charts the sky
+at that moment; by day, tonight's, when the Sun is 12° down. The stars appear, brightest first,
+sized by magnitude and coloured by their B − V temperature; the constellation figures are drawn
+in one by one from east to west; then the names, the ecliptic (dashed), the planets, and the Moon,
+enlarged 12 times, in its phase, its lit side turned along the sky towards the Sun. It holds
+after about 17 s. Underneath: the Moon's phase, height and rising and setting, the planets that
+are up, sunset and sunrise, the Harvest or Hunter's Moon when there is one, and the story of one
+star that is well up (27 of them, a deck): what its name means, what's odd about it, and, when
+its distance is known well enough, when the light you see left it.
+
+The astronomy follows Meeus's *Astronomical Algorithms* (`simulations/sky-math.js`): sidereal
+time, rigorous precession from J2000 to the date, the Moon from the main terms of ELP-2000/82,
+parallax and refraction, the Moon's phase and bright limb, planets' magnitudes; the Sun and
+planets from JPL's elements (`ephemeris.js`). The tests check it against Meeus's worked examples
+(sidereal time for 1987 April 10, the Sun for 1992 October 13 to 0.01°, the Moon for 1992 April
+12 to 0.0005° and 1 km) and the eclipses of 2026 (new and full moons within 3 minutes), plus the
+projection, precession's 1.397° a century, and the choice between tonight and now.
+
+Stars and figures come from [d3-celestial](https://github.com/ofrohn/d3-celestial) by Olaf
+Frohn (BSD 3-Clause; its stars from XHIP, names from the VizieR cross-indexes, figures after the
+IAU's charts): `node tools/build-stars.js <its data folder>` keeps the 2,855 stars to magnitude
+5.5 (and Mira, a variable, as a faint point where the figure of Cetus needs it), their IAU
+names, and the 88 figures as pairs of stars, in `data/stars.js`, with d3-celestial's licence. The
+stories, in `data/star-stories.js`, were written for this module.
+
+For the Pi: computed once per showing (~7 ms on a Mac), drawn in stages; the stars' 3 s change
+most of the chart each frame, the figures' 12 s only where each is drawn (27% of the canvas on
+average over the drawing), then the sim rests. Not yet measured on the Pi.
 
 ## A planets' dance page
 
@@ -578,6 +635,7 @@ npm test                     # physics checks (node --test, no dependencies)
 node dev/serve.js            # then open http://localhost:8765/dev/preview.html
 node tools/render-basins.js  # re-render assets/basins-*.png after changing the magnetic pendulum
 node tools/chladni-modes.js  # re-solve the Chladni plate's modes into data/chladni-modes.js
+node tools/build-stars.js DIR  # rebuild data/stars.js from d3-celestial's data folder
 ```
 
 With the server running, `/dev/sacred-gallery.html` shows a wall of finished sacred geometry

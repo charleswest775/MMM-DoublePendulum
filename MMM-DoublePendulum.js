@@ -45,7 +45,11 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/snow.js",
 			"simulations/three-body.js",
 			"simulations/billiards.js",
-			"simulations/rule30.js"
+			"simulations/rule30.js",
+			"simulations/sky-math.js",
+			"data/stars.js",
+			"data/star-stories.js",
+			"simulations/sky.js"
 		].map((f) => this.file(f));
 	},
 

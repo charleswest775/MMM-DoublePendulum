@@ -51,6 +51,13 @@ animations for his hallway mirror, as one page in a rotation of pages.
   `sacredSeed` redraws it; `dev/sacred-gallery.html` shows many at once. Measured on the Pi (700²,
   12 fps, six showings): ~42% of a core while drawing (~117% for the first 3 s of fade-in and
   glow), ~3% once held (stats panel); ~41% over a 30 s showing, 12 fps held, done ~24 s in.
+- `sky` is not chaos: the sky over the mirror (`classes: "page-sky"`, `skyLatitude`,
+  `skyLongitude`, `skyPlace`), a stereographic chart from the zenith, N up, E left; now after dark,
+  else tonight when the Sun is 12° down. `simulations/sky-math.js` (Meeus: sidereal time,
+  precession, Moon ELP main terms, phases, refraction, rise/set; tested against Meeus's examples
+  and the 2026 eclipses); stars and figures in `data/stars.js`, built by `tools/build-stars.js`
+  from d3-celestial's data (BSD, downloaded with Charles's OK, not kept); star stories in
+  `data/star-stories.js`. Drawn in stages over ~17 s, then rests. Not yet measured on the Pi.
 - `orbits` is not chaos: the planets' dance, a page of its own (`classes: "page-orbits"`). Real
   orbits from today (`simulations/ephemeris.js`: JPL's approximate Keplerian elements, Table 1
   for 1800–2050, Table 2 outside; tests check conjunction and opposition dates against the

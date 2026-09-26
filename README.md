@@ -1,7 +1,7 @@
 # MMM-ChaosTheory
 
 A [MagicMirror²](https://magicmirror.builders/) module that shows chaos theory in motion,
-cycling through five simulations, each with its equations and live numbers underneath:
+cycling through six simulations, each with its equations and live numbers underneath:
 
 | key | what you see |
 |---|---|
@@ -10,6 +10,7 @@ cycling through five simulations, each with its equations and live numbers under
 | `basins` | **Fractal basins.** A pendulum over three magnets: each pixel is coloured by the magnet it ends over. Two bobs released 6×10⁻⁴ apart swing live and land on different magnets; then the view zooms ×10, ×100, ×1000 into the boundary where they started. |
 | `logistic` | **The road to chaos.** The logistic map's bifurcation diagram paints itself, then a cobweb diagram sweeps r through period doubling into chaos, with the period and Lyapunov exponent. |
 | `icons` | **Symmetry in chaos.** One point hopping chaotically, millions of times, develops a symmetric picture (Field & Golubitsky). |
+| `threeBody` | **The three-body problem**, where Poincaré found chaos in 1889, as a long exposure, with a faint ghost of the same bodies started 10⁻⁶ away. In turn: Burrau's Pythagorean problem (masses 3, 4, 5 released from rest dance, then two pair off and the third is thrown out, for ever), Lagrange's triangle (unstable: the ghost's breaks up after four turns, the real one after eight, from rounding errors alone), and the figure-eight (stable: the ghost stays). |
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
@@ -50,7 +51,7 @@ No npm dependencies.
 	module: "MMM-ChaosTheory",
 	position: "middle_center",
 	config: {
-		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons"],
+		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody"],
 		cycleSeconds: 60,
 		width: 900,
 		height: 900,
@@ -62,13 +63,14 @@ No npm dependencies.
 
 | Option | Default | Description |
 |---|---|---|
-| `simulations` | all five | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
+| `simulations` | all six | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
 | `cycleSeconds` | `60` | Move to the next simulation this often |
 | `width`, `height` | `900` | Canvas size in pixels |
 | `fps` | `20` | Frame-rate cap |
 | `showMath` | `true` | Equations and live numbers under the canvas |
 | `lorenzStyle` | `"rotate"` | `"exposure"`: fixed view, trails build up like a long-exposure photo. About a third of the CPU on a Pi |
 | `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
+| `threeBodyScene` | taking turns | `threeBody`: always this one: `"pythagorean"`, `"lagrange"` or `"figure-eight"` |
 | `atomElements` | `[]` | `atom`: symbols to show, e.g. `["H", "Fe", "Au"]`. Empty = all 118 |
 | `atomOrder` | `"shuffle"` | `atom`: `"sequence"` goes through them by atomic number |
 | `orbitalSeconds` | `22` | `orbital`: the exposure; then it holds |

@@ -6,7 +6,7 @@
 Module.register("MMM-ChaosTheory", {
 	defaults: {
 		// shown in turn; each keyed in window.ChaosSimulations
-		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons"],
+		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody"],
 		cycleSeconds: 60,  // move to the next simulation this often (and each time the module is shown)
 		width: 900,        // canvas size in CSS pixels
 		height: 900,
@@ -42,7 +42,8 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/hat.js",
 			"simulations/tilings.js",
 			"simulations/snow-model.js",
-			"simulations/snow.js"
+			"simulations/snow.js",
+			"simulations/three-body.js"
 		].map((f) => this.file(f));
 	},
 

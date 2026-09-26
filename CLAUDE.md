@@ -12,7 +12,9 @@ animations for his hallway mirror, as one page in a rotation of pages.
 - Simulations are classes on `window.ChaosSimulations` with `step(dt)`, `draw(ctx, w, h)`,
   optional `readout()` and static `info` (title, equations). UMD-style so physics runs in Node.
   `lorenz`, `pendulums`, `basins` (magnetic pendulum over pre-rendered maps in `assets/`),
-  `logistic`, `icons`, and the original `doublePendulum`.
+  `logistic`, `icons`, `threeBody` (Burrau's Pythagorean problem, Lagrange's unstable triangle
+  and the stable figure-eight, each with a ghost started 10⁻⁶ away; adaptive Dormand–Prince at
+  10⁻¹², drawn as a long exposure), and the original `doublePendulum`.
 - `atom` is not chaos: a Bohr-style atom for a page of its own (second module instance with
   `classes: "page-atom"`, see README). One element per sim instance, so `cycleSeconds` and
   `resume()` move to the next element. A sim instance may set `this.info` to supply its own

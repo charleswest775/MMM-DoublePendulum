@@ -13,14 +13,15 @@ cycling through five simulations, each with its equations and live numbers under
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
-And four that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
-[A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page) and
-[A photo page](#a-photo-page)):
+And some that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
+[A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page),
+[A planets' dance page](#a-planets-dance-page) and [A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
+| `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
 
@@ -72,6 +73,8 @@ No npm dependencies.
 | `sacredSeed` | none | `sacred`: draw this figure every time, by the number shown under it, e.g. `"3A7F21C0"` |
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
+| `orbitsSeconds` | `22` | `orbits`: seconds to draw a figure; then it holds |
+| `orbitsDances` | `[]` | `orbits`: which figures, e.g. `["venus", "trigon"]`. Empty = all eight: `venus`, `venus-loops`, `mercury`, `mars`, `jupiter-saturn`, `trigon`, `jupiter`, `saturn`, one per showing, all before any repeats |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
@@ -245,6 +248,57 @@ and the glow with it, then ~3% while the finished figure is held, most of that t
 Over a 30 s showing, ~41%: the cheapest of the animated pages. It holds 12 fps throughout, so
 the figure is finished on time, ~24 s after the page appears.
 
+## A planets' dance page
+
+Another instance, showing only `orbits`:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-orbits",
+	position: "middle_center",
+	config: {
+		simulations: ["orbits"],
+		cycleSeconds: 600,  // one figure per showing
+		orbitsSeconds: 22,  // drawn in 22 s of a 30 s page, then held
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each showing draws one of eight figures from today's date, with time running evenly, so a
+planet lingers where it really moves slowly:
+
+- **Earth and Venus**, the line between them every 4 days for 8 years: a five-petalled rose,
+  because 8 Earth years (2922.1 days) ≈ 13 Venus years (2921.1) ≈ 5 laps of Earth by Venus
+  (5 × 583.9). **Earth and Mercury**, every 3 days for 7 years: 22 laps, 29 Mercury years.
+  **Jupiter and Saturn**, every month for three of Jupiter's laps of Saturn (60 years).
+- **Venus, Mars, Jupiter or Saturn seen from Earth**: the planet's position minus Earth's,
+  with Earth at the centre and the Sun's yearly circle round it. It loops back each time one
+  overtakes the other: Venus 5 times in 8 years, at the corners of a pentagram; Mars 7 times
+  in 15; Jupiter 11 times, Saturn 28, in one of their years. Ptolemy's epicycles were built to
+  reproduce exactly these loops.
+- **Kepler's trigon**: every conjunction of Jupiter and Saturn from the one of 2020 on for 800
+  years, joined in order on the circle of the zodiac. Each is 243° on from the last, so three
+  make a triangle that turns 9° every 60 years, and after 40 the meetings are back in the same
+  signs. Longitudes are measured from the equinox of each date, which precesses 1.4° a century,
+  as Kepler's were.
+
+Positions come from JPL's *Keplerian Elements for Approximate Positions of the Major Planets*
+(Standish): each orbit an ellipse whose elements drift linearly, fitted to JPL's DE ephemeris,
+good to arcseconds for the inner planets and arcminutes for Saturn from 1800 to 2050 (Table 1),
+and coarser from 3000 BC to AD 3000 (Table 2, used outside those years). The tests check them
+against the almanacs: Venus's inferior conjunctions of 2020–2026 and Mars's oppositions of
+2018–2027 to the day, Jupiter and Saturn 0.10° apart on 21 December 2020, and the conjunction of
+December 1603 that Kepler watched.
+
+Drawn like sacred geometry: each frame adds only what is new, with `lighter` compositing, and
+the finished figure rests. Measured in a desktop browser by diffing frames, a frame changes on
+average 15% of the canvas for the line figures and under 1% for the loops, against 48% for
+sacred geometry, so the page should cost the Pi no more than that one does.
+
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
@@ -354,7 +408,10 @@ Cube its 13 circles and 78 lines, that star polygons' sides touch the circle the
 nested pentagrams shrink by 1/φ², that pursuit polygons' corners lie on the last one's sides,
 that a golden spiral grows by φ a quarter turn, which polygons are constructible (checked
 against OEIS A003401), and, for many random figures, that each fills the unit circle and has
-the n-fold (and mirror) symmetry it claims, and that every stroke is drawn exactly once.
+the n-fold (and mirror) symmetry it claims, and that every stroke is drawn exactly once. For
+the planets: conjunctions and oppositions against the almanacs, JPL's two tables against each
+other, Kepler's third law, Venus's 8-year cycle and the 2.4° its pentagram turns in it, Mars
+going backwards at opposition, and the trigon's 243° steps.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

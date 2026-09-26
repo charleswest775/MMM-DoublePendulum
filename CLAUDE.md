@@ -47,6 +47,13 @@ animations for his hallway mirror, as one page in a rotation of pages.
   `sacredSeed` redraws it; `dev/sacred-gallery.html` shows many at once. Measured on the Pi (700²,
   12 fps, six showings): ~42% of a core while drawing (~117% for the first 3 s of fade-in and
   glow), ~3% once held (stats panel); ~41% over a 30 s showing, 12 fps held, done ~24 s in.
+- `orbits` is not chaos: the planets' dance, a page of its own (`classes: "page-orbits"`). Real
+  orbits from today (`simulations/ephemeris.js`: JPL's approximate Keplerian elements, Table 1
+  for 1800–2050, Table 2 outside; tests check conjunction and opposition dates against the
+  almanacs), drawn as sacred-geometry-like figures in 22 s, then held: Earth–Venus lines (the
+  five-petalled rose), Earth–Mercury, Jupiter–Saturn, a planet's loops as seen from Earth, and
+  Kepler's trigon of great conjunctions. A deck of eight, one per showing. Incremental like
+  `sacred`; frames change 0.1–15% of the canvas (sacred: 48%). Not yet measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

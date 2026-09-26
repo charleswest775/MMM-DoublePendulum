@@ -34,7 +34,10 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/sacred-geometry.js",
 			"simulations/sacred.js",
 			"simulations/ephemeris.js",
-			"simulations/orbits.js"
+			"simulations/orbits.js",
+			"simulations/plate.js",
+			"data/chladni-modes.js",
+			"simulations/chladni.js"
 		].map((f) => this.file(f));
 	},
 

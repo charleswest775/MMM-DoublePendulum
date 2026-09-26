@@ -6,6 +6,6 @@
   "scripts": {
     "test": "node --test"
   },
-  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics", "sacred geometry"],
+  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics", "sacred geometry", "orbits", "chladni"],
   "license": "MIT"
 }

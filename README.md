@@ -15,13 +15,15 @@ A new simulation starts every `cycleSeconds`, and each time the module is shown 
 
 And some that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
 [A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page),
-[A planets' dance page](#a-planets-dance-page) and [A photo page](#a-photo-page)):
+[A planets' dance page](#a-planets-dance-page), [A Chladni page](#a-chladni-page) and
+[A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
 | `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
+| `chladni` | **Chladni figures.** Sand scattered on a square plate with free edges; the plate sings one of its modes, the grains hop off the parts that move and come to rest on the lines that don't, and the figure appears. Then it holds. 49 figures, one per showing, with the note a real steel plate would sound and the story of the figures (Chladni, Napoleon's prize, Sophie Germain, Ritz). |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
 
@@ -74,6 +76,8 @@ No npm dependencies.
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
 | `orbitsSeconds` | `22` | `orbits`: seconds to draw a figure; then it holds |
+| `chladniSeconds` | `14` | `chladni`: the longest the plate sings; it stops sooner once the sand has settled (8–12 s) |
+| `chladniGrains` | `22000` | `chladni`: grains of sand |
 | `orbitsDances` | `[]` | `orbits`: which figures, e.g. `["venus", "trigon"]`. Empty = all eight: `venus`, `venus-loops`, `mercury`, `mars`, `jupiter-saturn`, `trigon`, `jupiter`, `saturn`, one per showing, all before any repeats |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
@@ -299,6 +303,53 @@ the finished figure rests. Measured in a desktop browser by diffing frames, a fr
 average 15% of the canvas for the line figures and under 1% for the loops, against 48% for
 sacred geometry, so the page should cost the Pi no more than that one does.
 
+## A Chladni page
+
+Another instance, showing only `chladni`:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-chladni",
+	position: "middle_center",
+	config: {
+		simulations: ["chladni"],
+		cycleSeconds: 600,  // one figure per showing
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each showing scatters sand on a square plate with free edges and makes it sing one of its first
+49 modes, up to λ = 470. Where the plate moves, its acceleration throws the grains up and they
+land a little way off, more often downhill, away from the bigger motion; where it moves less
+than a threshold it can't throw them, only nudge them onto the nodal line. So the sand leaves
+the moving parts and draws the lines that stand still, in 8–12 s, and the figure holds. Modes
+odd in x or y are still at the centre, where Chladni held his plates and bowed them at an edge;
+the others are shaken at the centre, as a vibrator does today. A pair of modes with the same
+frequency (one the other turned through 90°) makes two figures, their sum and difference. Under
+the sand, a faint tint shows the mode itself: warm where the plate is up, cool where it's down.
+
+The modes are solved by the method Walther Ritz invented for this very plate in 1909
+(`simulations/plate.js`): the deflection as a mix of products of a free–free beam's modes,
+X_m(x)X_n(y), 12 of each parity each way, with the mix that makes the plate's bending energy
+stationary against its kinetic energy: a matrix eigenproblem for each of the square's four
+parity classes. `node tools/chladni-modes.js` writes them to `data/chladni-modes.js`, so the
+Pi doesn't solve anything. The tests check the frequencies against Leissa's *Vibration of
+Plates* (13.468, 19.596, 24.270, 34.801, 61.093, 63.686 for ν = 0.3; all within 0.4%, from
+above, as Ritz's method gives upper bounds), the shapes' symmetries, orthogonality, and that the
+sand ends up on the nodal lines. The caption gives λ = ωa²√(ρh/D) and what a 20 cm steel plate
+1 mm thick would sound, with the nearest note, and one of five stories: Chladni in 1787,
+Napoleon's prize and Sophie Germain's win in 1816, Kirchhoff's edge conditions and Ritz,
+Faraday's powder that goes the other way, and violin makers' glitter.
+
+For the Pi: the sand is a pixel buffer, and each frame puts back only the rectangle of pixels
+whose grains moved. While the sand moves that is most of the plate, ~75% of the canvas (like the
+atom, which costs ~78% of a core at this size and rate), for 8–12 s; then the sim rests. Not yet
+measured on the Pi; JavaScript takes ~1.3 ms a frame on a Mac.
+
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
@@ -390,6 +441,7 @@ a Mac): at ~3.5 ms per pixel, a Pi 3 would need 47 minutes of CPU for one.
 npm test                     # physics checks (node --test, no dependencies)
 node dev/serve.js            # then open http://localhost:8765/dev/preview.html
 node tools/render-basins.js  # re-render assets/basins-*.png after changing the magnetic pendulum
+node tools/chladni-modes.js  # re-solve the Chladni plate's modes into data/chladni-modes.js
 ```
 
 With the server running, `/dev/sacred-gallery.html` shows a wall of finished sacred geometry
@@ -411,7 +463,9 @@ against OEIS A003401), and, for many random figures, that each fills the unit ci
 the n-fold (and mirror) symmetry it claims, and that every stroke is drawn exactly once. For
 the planets: conjunctions and oppositions against the almanacs, JPL's two tables against each
 other, Kepler's third law, Venus's 8-year cycle and the 2.4° its pentagram turns in it, Mars
-going backwards at opposition, and the trigon's 243° steps.
+going backwards at opposition, and the trigon's 243° steps. For the Chladni plate: the beam
+modes' frequencies and orthonormality, the plate's frequencies against Leissa's, the symmetries
+of the lowest modes, the data file against a fresh solve, and the sand on the nodal lines.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

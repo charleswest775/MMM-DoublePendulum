@@ -54,6 +54,13 @@ animations for his hallway mirror, as one page in a rotation of pages.
   five-petalled rose), Earth–Mercury, Jupiter–Saturn, a planet's loops as seen from Earth, and
   Kepler's trigon of great conjunctions. A deck of eight, one per showing. Incremental like
   `sacred`; frames change 0.1–15% of the canvas (sacred: 48%). Not yet measured on the Pi.
+- `chladni` is not chaos: Chladni figures, a page of its own (`classes: "page-chladni"`). Sand on
+  a free square plate: grains hop where the amplitude exceeds a threshold (farther the more it
+  moves, biased downhill), creep onto the nodal line below it, fall off the edge. 49 figures (a
+  deck), modes by Ritz's method (`simulations/plate.js`, precomputed by `tools/chladni-modes.js`
+  into `data/chladni-modes.js`; tests match Leissa's published frequencies). Pixel buffer with
+  dirty-rect putImageData: ~75% of the canvas per frame for 8–12 s while the sand moves, then
+  rests. Not yet measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

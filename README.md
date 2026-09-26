@@ -180,7 +180,8 @@ and cones of d_z², and that the sampled mean converges on ⟨r⟩.
 
 For the Pi: dots are counted per cell of a 640 × 640 grid, and turned into colour and drawn
 four times a second, not every frame (~70% of the canvas each time); after the exposure the
-sim rests. Not yet measured on the Pi.
+sim rests. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on): ~45% of a core while the picture develops, ~4% once it's held, 47% (42–49)
+over a 30 s showing, its page change included (~125% for the first 3 s).
 
 ## A fractal page
 
@@ -355,7 +356,9 @@ stories, in `data/star-stories.js`, were written for this module.
 
 For the Pi: computed once per showing (~7 ms on a Mac), drawn in stages; the stars' 3 s change
 most of the chart each frame, the figures' 12 s only where each is drawn (27% of the canvas on
-average over the drawing), then the sim rests. Not yet measured on the Pi.
+average over the drawing), then the sim rests. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on): ~17% of a core while the chart is drawn
+at 11 fps, ~5% once it's held, 23% (22–24) over a 30 s showing, its page change and the stars'
+first seconds included (~112% for the first 3 s). The cheapest of the drawing pages.
 
 ## A planets' dance page
 
@@ -406,7 +409,8 @@ December 1603 that Kepler watched.
 Drawn like sacred geometry: each frame adds only what is new, with `lighter` compositing, and
 the finished figure rests. Measured in a desktop browser by diffing frames, a frame changes on
 average 15% of the canvas for the line figures and under 1% for the loops, against 48% for
-sacred geometry, so the page should cost the Pi no more than that one does.
+sacred geometry. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on): ~30% of a core while a figure is drawn, ~4% once it's held, 33%
+(23–39) over a 30 s showing, its page change included: less than sacred geometry's 41%.
 
 ## A Chladni page
 
@@ -452,8 +456,9 @@ Faraday's powder that goes the other way, and violin makers' glitter.
 
 For the Pi: the sand is a pixel buffer, and each frame puts back only the rectangle of pixels
 whose grains moved. While the sand moves that is most of the plate, ~75% of the canvas (like the
-atom, which costs ~78% of a core at this size and rate), for 8–12 s; then the sim rests. Not yet
-measured on the Pi; JavaScript takes ~1.3 ms a frame on a Mac.
+atom, which costs ~78% of a core at this size and rate), for 8–12 s; then the sim rests. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on):
+~108% of a core while the sand moves, the first ~12 s, at 11 fps; ~5% once it has settled; 53%
+(47–61) over a 30 s showing, its page change included (~154% for the first 3 s).
 
 ## A tilings page
 
@@ -503,7 +508,9 @@ congruent (sides and circumradius equal in the hyperbolic metric, q at each corn
 hat's counts, congruence and ratio.
 
 For the Pi: drawn in a spiral, a frame's new tiles lie together: on average about 1% of the
-canvas changes per frame, the least of any page, then the sim rests. Not yet measured on the Pi.
+canvas changes per frame, the least of any page, then the sim rests. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on): ~33% of a core
+while tiles are laid (the ~2%-per-fps cost of any changing frame, mostly), ~7% once it's held, 37%
+(34–39) over a 30 s showing, its page change included.
 
 ## A snow page
 
@@ -543,7 +550,8 @@ wedge stands for every cell once, and that plates fill their hexagon and dendrit
 
 For the Pi: a few hundred to a few thousand steps of a 5,700-cell wedge, paced to finish in 20 s
 and never more than 14 ms a frame; the picture redrawn 5 times a second, only as far as the
-crystal reaches (31% of the canvas on average); then it rests. Not yet measured on the Pi.
+crystal reaches (31% of the canvas on average); then it rests. Measured on the mirror (700×700 at 12 fps, seven showings, Electron + cage, stats panel on): ~43% of a core while the
+crystal grows, ~6% once it's grown, 43% (39–50) over a 30 s showing, its page change included.
 
 ## A photo page
 
@@ -649,6 +657,15 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `photos`, over a 20 s page of four photos, its page change included (~180 for the first second); one photo held for the page: 14 | 39 | |
 | `sacred`, 700×700 at 12 fps, while a figure is drawn (~117 for the first 3 s, the page's fade-in and the glow; 27–63 in 3-s windows) | 42 | 12 |
 | `sacred`, the finished figure held, with the stats panel on | 3 | 0 |
+| `sky`, 700×700 at 12 fps, over a 30 s showing, page change included (~112 for the first 3 s; drawn by ~19 s, then ~5) | 23 | 11 |
+| `orbits`, the same (drawn by ~25 s, then ~4) | 33 | 12 |
+| `tilings`, the same (laid by ~23 s, then ~7) | 37 | 12 |
+| `snow`, the same (grown by ~23 s, then ~6) | 43 | 12 |
+| `orbital`, the same (exposed by ~25 s, then ~4) | 47 | 12 |
+| `chladni`, the same: ~108 while the sand moves, ~12 s, then ~5 | 53 | 11 |
+| `threeBody`, 900×900 at 20 fps, over a 60 s showing (Burrau's problem and Lagrange's triangle) | 76 | 24 |
+| `billiards`, the same | 58 | 22 |
+| `rule30`, the same | 28 | 20 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
 | `pendulumStyle: "exposure"` | 66 | 20+ |
 | *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |

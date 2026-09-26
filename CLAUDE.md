@@ -18,7 +18,8 @@ animations for his hallway mirror, as one page in a rotation of pages.
   and the stable figure-eight, each with a ghost started 10⁻⁶ away; adaptive Dormand–Prince at
   10⁻¹², drawn as a long exposure), `billiards` (ellipse vs Bunimovich stadium, three balls
   10⁻⁶ rad apart in each; one table per frame in turn), `rule30` (a row at a time, 5 rows a
-  second: each frame changes one strip), and the original `doublePendulum`.
+  second: each frame changes one strip), and the original `doublePendulum`. Measured on the Pi
+  (900², 20 fps, over a 60 s showing): threeBody 76%, billiards 58%, rule30 28%.
 - `atom` is not chaos: a Bohr-style atom for a page of its own (second module instance with
   `classes: "page-atom"`, see README). One element per sim instance, so `cycleSeconds` and
   `resume()` move to the next element. A sim instance may set `this.info` to supply its own
@@ -49,7 +50,8 @@ animations for his hallway mirror, as one page in a rotation of pages.
   (900×1000, `fps: 20`): ~1% while a photo is held; a crossfade 140–170% for its 0.8 s at a
   steady 20 fps, then 40–80% for ~0.4 s laying out the next photo; 39% over the 20 s page (was
   14% with one photo; the page change itself is ~180% for a second). The mirror rotates chaos →
-  photos → atom → photos → fractal → photos → sacred → photos, 20 s per photo page.
+  photos → atom → photos → fractal → photos → sacred → photos → sky, 20 s per photo page, the
+  new sims taking turns in the old slots (see below).
 - `sacred` is not chaos: sacred geometry, a page of its own (`classes: "page-sacred"`). Each
   showing, `simulations/sacred-geometry.js` composes a new n-fold figure from a random 32-bit
   seed (a core — Seed/Flower of Life, Metatron's Cube, star cascade, whirl, times table, mystic
@@ -65,43 +67,55 @@ animations for his hallway mirror, as one page in a rotation of pages.
   precession, Moon ELP main terms, phases, refraction, rise/set; tested against Meeus's examples
   and the 2026 eclipses); stars and figures in `data/stars.js`, built by `tools/build-stars.js`
   from d3-celestial's data (BSD, downloaded with Charles's OK, not kept); star stories in
-  `data/star-stories.js`. Drawn in stages over ~17 s, then rests. Not yet measured on the Pi.
+  `data/star-stories.js`. Drawn in stages over ~17 s, then rests. Measured on the Pi (700², 12 fps,
+  seven showings): ~17% while drawn, ~5% held, 23% over a 30 s showing, the cheapest drawing page.
 - `orbits` is not chaos: the planets' dance, a page of its own (`classes: "page-orbits"`). Real
   orbits from today (`simulations/ephemeris.js`: JPL's approximate Keplerian elements, Table 1
   for 1800–2050, Table 2 outside; tests check conjunction and opposition dates against the
   almanacs), drawn as sacred-geometry-like figures in 22 s, then held: Earth–Venus lines (the
   five-petalled rose), Earth–Mercury, Jupiter–Saturn, a planet's loops as seen from Earth, and
   Kepler's trigon of great conjunctions. A deck of eight, one per showing. Incremental like
-  `sacred`; frames change 0.1–15% of the canvas (sacred: 48%). Not yet measured on the Pi.
+  `sacred`; frames change 0.1–15% of the canvas (sacred: 48%). Measured on the Pi (700², 12 fps,
+  seven showings): ~30% while drawing, ~4% held, 33% over a 30 s showing.
 - `chladni` is not chaos: Chladni figures, a page of its own (`classes: "page-chladni"`). Sand on
   a free square plate: grains hop where the amplitude exceeds a threshold (farther the more it
   moves, biased downhill), creep onto the nodal line below it, fall off the edge. 49 figures (a
   deck), modes by Ritz's method (`simulations/plate.js`, precomputed by `tools/chladni-modes.js`
   into `data/chladni-modes.js`; tests match Leissa's published frequencies). Pixel buffer with
   dirty-rect putImageData: ~75% of the canvas per frame for 8–12 s while the sand moves, then
-  rests. Not yet measured on the Pi.
+  rests. Measured on the Pi (700², 12 fps, seven showings): ~108% while the sand moves (~12 s),
+  ~5% settled, 53% over a 30 s showing.
 - `orbital` is not chaos: the quantum atom, meant to take turns with `atom` on its page
   (`simulations: ["atom", "orbital"]`). Hydrogen |n l m⟩ (30 states, a deck), exact ψ; dots
   sampled from |ψ|² in the x–z slice (circular states m = l = n − 1: the x–y plane, a ring at
   Bohr's radius), counted on a 640² grid and coloured by ψ's sign 4× a second (~70% of the canvas
-  each time), 22 s exposure then rests. Readout: sampled mean r converging on ⟨r⟩. Not yet
-  measured on the Pi.
+  each time), 22 s exposure then rests. Readout: sampled mean r converging on ⟨r⟩. Measured on
+  the Pi (700², 12 fps, seven showings): ~45% while developing, ~4% held, 47% over 30 s.
 - `tilings` is not chaos: a page of its own (`classes: "page-tilings"`), a deck of ten: Penrose,
   Ammann–Beenker, heptagonal, dodecagonal (de Bruijn multigrid, random offsets), five hyperbolic
   {p,q} in Poincaré's disc (reflections, geodesic arcs, Coxeter's shaded triangles), and the hat
   (`simulations/hat.js`: the paper's H/T/P/F metatile substitution after Kaplan's code; tests
   check no overlaps/gaps and 4, 25, 169, 1156 hats per level). Laid in a spiral in 22 s, then
-  rests: ~1% of the canvas changes per frame. Not yet measured on the Pi.
+  rests: ~1% of the canvas changes per frame. Measured on the Pi (700², 12 fps, seven showings):
+  ~33% while laying (mostly the per-frame fixed cost), ~7% held, 37% over a 30 s showing.
 - `snow` is not chaos: a snow crystal grown live in Reiter's model (`simulations/snow-model.js`,
   a twelfth of the hex grid, tested against the whole grid), a page of its own
   (`classes: "page-snow"`, for winter). Five habits, random β/γ within each; paced to grow in 20 s
   within 14 ms of model per frame; redrawn 5×/s over the crystal's square (~31% of the canvas),
-  then rests. Not yet measured on the Pi.
+  then rests. Measured on the Pi (700², 12 fps, seven showings): ~43% while growing, ~6% grown,
+  43% over a 30 s showing.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing
   micro-benchmarks for the Pi, `dev/cpu-trace.py` traces its CPU; `tools/render-basins.js`
   renders the basin maps.
+
+## The mirror's rotation (config.js in the setup repo, since 2026-09-26)
+
+chaos (60 s; lorenz, pendulums, basins, logistic, icons, threeBody, billiards, rule30, one per
+showing) → photos (20) → atom (45; atom and orbital in turn) → photos → fractal (30; zoom and
+chladni in turn) → photos → sacred (30; sacred, tilings, orbits in turn) → photos → sky (30),
+~4½ minutes. `snow` isn't in it: add it to a slot for the winter.
 
 ## Performance findings on the Pi (measured, see README)
 

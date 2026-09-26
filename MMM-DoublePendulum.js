@@ -204,8 +204,9 @@ Module.register("MMM-ChaosTheory", {
 		const interval = 1000 / this.config.fps;
 		// Sleep until the next frame is due and only then ask for an animation frame,
 		// so Chromium isn't woken at 60 Hz for frames we'd throw away. A sim that is
-		// resting (e.g. finished drawing a static picture) is polled slowly instead.
-		const wait = this.sim.resting ? 500 : Math.max(0, interval - (performance.now() - this.lastFrame));
+		// resting (e.g. finished drawing a static picture) is polled slowly instead,
+		// as is one whose page is fading out (see frame).
+		const wait = this.sim.resting || this.hidden ? 500 : Math.max(0, interval - (performance.now() - this.lastFrame));
 		this.timer = setTimeout(() => {
 			this.timer = null;
 			this.rafId = requestAnimationFrame((now) => {
@@ -217,6 +218,9 @@ Module.register("MMM-ChaosTheory", {
 	},
 
 	frame (now) {
+		// MagicMirror sets `hidden` as the fade-out starts, and calls suspend() once it's over.
+		// Meanwhile nothing new: no photo starting to fade in as the page goes, say.
+		if (this.hidden) return;
 		if (now - this.startedAt > this.config.cycleSeconds * 1000) this.nextSim();
 		const sim = this.sim;
 		// clamp dt so a stalled frame doesn't explode an integrator; a resting sim is only

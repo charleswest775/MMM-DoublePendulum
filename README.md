@@ -22,7 +22,7 @@ And four that aren't chaos, each meant for a page of its own (see [An atom page]
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
-| `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
+| `photos` | **Photos.** Your own pictures, each held still with the date it was taken, the next one crossfading in every 5 s: four to a 20 s page. All of them before any repeats. |
 
 Built for a **Raspberry Pi 3 without GPU acceleration**: everything is drawn by the CPU, so the
 drawing is designed around what that costs (see [Performance](#performance)), and the animation
@@ -72,6 +72,8 @@ No npm dependencies.
 | `sacredSeed` | none | `sacred`: draw this figure every time, by the number shown under it, e.g. `"3A7F21C0"` |
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
+| `photoSeconds` | `5` | `photos`: a new photo this often, its crossfade included: four to a 20 s page. `0`: one photo per showing |
+| `photoFadeSeconds` | `0.8` | `photos`: how long the crossfade from one photo to the next takes |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
@@ -247,9 +249,11 @@ the figure is finished on time, ~24 s after the page appears.
 
 ## A photo page
 
-A page that shows one photo, still, between the animations: after an animation the Pi gets a
-rest, without the screen going empty. Once the photo is drawn the module rests: measured on
-the mirror, ~1% of a core while a photo is held, against 75–330% for the animations around it.
+A page of photos between the animations: after an animation the Pi gets a rest, without the
+screen going empty. Each photo is held still, with the date it was taken, and every
+`photoSeconds` the next one crossfades in, quickly (`photoFadeSeconds`): four to a 20 s page.
+While a photo is held the module rests: measured on the mirror, ~1% of a core, against
+75–330% for the animations around it.
 
 ```js
 {
@@ -258,22 +262,39 @@ the mirror, ~1% of a core while a photo is held, against 75–330% for the anima
 	position: "middle_center",
 	config: {
 		simulations: ["photos"],
-		cycleSeconds: 3600,  // a new photo each time the page is shown
+		cycleSeconds: 3600,  // new photos each time the page is shown
+		photoSeconds: 5,     // four to a 20 s page
 		width: 900,          // on a landscape screen, wider photos reach the clock in the corner
 		height: 1000,
-		fps: 4               // only matters for the moment before the photo is drawn
+		fps: 20              // for the crossfades; in between, the module rests
 	}
 }
 ```
 
 MagicMirror calls `resume()` only after a page has faded in, so the module clears its canvas
 when it's hidden instead — otherwise the last picture would be what fades in. The photo page
-goes further: it picks and draws its next photo while hidden, ready to be faded in. (The
-simulations can't: they would animate, and `zoom` would run its workers, unseen.)
+goes further: it picks and draws its first photo while hidden, ready to be faded in, and gets
+the second ready too. (The simulations can't: they would animate, and `zoom` would run its
+workers, unseen.)
+
+The crossfades keep time with the page. MMM-pages shows a page's modules 0.5 s after the page
+changes; they have faded in, and `resume()` starts the photos' clock, at 1 s. Photo n is all in
+(n − 1) × `photoSeconds` later, having faded in over the 0.8 s before: on a 20 s page the
+second at 6 s, the third at 11 s and the fourth at 16 s, held until the page starts to fade
+out at 20 s. No fifth starts then: while MagicMirror fades a module out, the module draws
+nothing new. The photo it had ready next goes back on the deck, to open the next showing.
+
+Each photo is laid out once, while the one before it is held: scaled to fit with the better
+filter, its date under it, on a canvas of its own. A crossfade then only copies pixels, and only
+in the box where either photo is: between two landscape photos, the black above and below them
+is left alone. That box is still redrawn in full every frame of a crossfade, at up to `fps`:
+not yet measured on the mirror.
 
 List the class on more than one page, e.g.
 `modules: [["page-chaos"], ["page-photos"], ["page-atom"], ["page-photos"]]`, and each
-showing brings the next photo. They're shuffled; each is shown once before any repeats.
+showing brings the next photos. They're shuffled; each is shown once before any repeats, and a
+new deck keeps the last ten shown back from its start, so no photo comes round again within a
+showing or two.
 
 The photos come from `~/mirror-photos` on the mirror (or the folder in the `MIRROR_PHOTOS`
 environment variable): JPEG, PNG or WebP, served by the module's `node_helper`. **Resize them
@@ -306,7 +327,7 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `atom`, 700×700 at 20 fps | 150 | 20 |
 | `zoom`, 700×700 at 12 fps, 2 workers (first 30 s of a dive: Elephant Valley, the star, the north bulb) | 155–168 | 13 |
 | `zoom`, the same, Seahorse Valley / the Julia spiral | 234 / 270 | 13 |
-| `photos`, 900×1000, while the photo is held (a spike to ~150 for the 2 s it takes to appear) | 1 | 0 |
+| `photos`, 900×1000, while a photo is held (a spike to ~150 for the 2 s it takes to appear) | 1 | 0 |
 | `sacred`, 700×700 at 12 fps, while a figure is drawn (~117 for the first 3 s, the page's fade-in and the glow; 27–63 in 3-s windows) | 42 | 12 |
 | `sacred`, the finished figure held, with the stats panel on | 3 | 0 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |
@@ -325,7 +346,8 @@ What costs what, from micro-benchmarks on the Pi (`dev/bench.js`):
   parts of the canvas in the same frame.
 - JavaScript is not the bottleneck: step and draw take 0.1–3 ms per frame.
 - The frame loop sleeps with `setTimeout` until a frame is due. A simulation showing a finished
-  picture rests, and is only polled twice a second.
+  picture rests, and is only polled twice a second. While MagicMirror fades the module out,
+  nothing new is drawn.
 
 The fractal basin maps are rendered ahead of time (`node tools/render-basins.js`, ~2 min on
 a Mac): at ~3.5 ms per pixel, a Pi 3 would need 47 minutes of CPU for one.

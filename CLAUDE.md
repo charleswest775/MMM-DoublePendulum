@@ -8,7 +8,9 @@ animations for his hallway mirror, as one page in a rotation of pages.
 - `MMM-ChaosTheory.js` — module shell: one canvas plus an HTML caption (equations + live
   readout, updated 2×/s). Cycles through `config.simulations` every `cycleSeconds` and on each
   `resume()`. Loop: `setTimeout` until a frame is due, then one `requestAnimationFrame`.
-  `suspend()` stops it; a sim with `resting = true` is polled only every 500 ms.
+  `suspend()` stops it; a sim with `resting = true` is polled only every 500 ms. While
+  MagicMirror fades the module out (`hidden` is set at the start, `suspend()` comes after),
+  frames draw nothing.
 - Simulations are classes on `window.ChaosSimulations` with `step(dt)`, `draw(ctx, w, h)`,
   optional `readout()` and static `info` (title, equations). UMD-style so physics runs in Node.
   `lorenz`, `pendulums`, `basins` (magnetic pendulum over pre-rendered maps in `assets/`),
@@ -29,15 +31,20 @@ animations for his hallway mirror, as one page in a rotation of pages.
   redraw every frame, plus 1–2 cores of workers while shown. Measured on the Pi (700², 12 fps,
   2 workers): 155–270% of a core, ~130% of it drawing; 70–73 °C; workers 0% when hidden. The module calls `sim.dispose()`
   (if present) when it replaces a sim, which terminates the workers.
-- `photos` is not chaos: one of Charles's photos per showing, held still (the sim rests once
-  drawn), date taken drawn under it. A page of its own (`classes: "page-photos"`), listed
-  between the animation pages so the Pi gets its rest without an empty screen. `node_helper.js`
+- `photos` is not chaos: Charles's photos, each held still (the sim rests) with the date taken
+  under it, the next crossfading in every `photoSeconds` (5: four to the 20 s page, in 0.8 s,
+  `photoFadeSeconds`). Each is composed once on its own canvas while the last is held; a fade
+  redraws only the box around both photos. Photos got ready but not shown go back on the deck
+  (`dispose()`), and a new deck keeps the last ten dealt off its start. A page of its own
+  (`classes: "page-photos"`), listed between the animation pages so the Pi gets its rest
+  without an empty screen. `node_helper.js`
   serves `~/mirror-photos` on the Pi (list + files, dates from EXIF via `photo-index.js`).
   **The photos are private: never commit them to this public repo.** Charles's curated
   originals live in `~/Pictures/Mirror` on the Mac; `mac/sync-mirror-photos.sh` in the setup
   repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi. Measured: ~1% of a
-  core while a photo is held (spike ~150% for the 2 s it appears); the mirror rotates chaos →
-  photo → atom → photo → fractal → photo, 20 s per photo.
+  core while a photo is held (spike ~150% for the 2 s it appears); the crossfades not yet
+  measured. The mirror rotates chaos → photos → atom → photos → fractal → photos → sacred →
+  photos, 20 s per photo page, at `fps: 20` for the crossfades.
 - `sacred` is not chaos: sacred geometry, a page of its own (`classes: "page-sacred"`). Each
   showing, `simulations/sacred-geometry.js` composes a new n-fold figure from a random 32-bit
   seed (a core — Seed/Flower of Life, Metatron's Cube, star cascade, whirl, times table, mystic

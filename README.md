@@ -1,7 +1,7 @@
 # MMM-ChaosTheory
 
 A [MagicMirror²](https://magicmirror.builders/) module that shows chaos theory in motion,
-cycling through six simulations, each with its equations and live numbers underneath:
+cycling through seven simulations, each with its equations and live numbers underneath:
 
 | key | what you see |
 |---|---|
@@ -11,6 +11,7 @@ cycling through six simulations, each with its equations and live numbers undern
 | `logistic` | **The road to chaos.** The logistic map's bifurcation diagram paints itself, then a cobweb diagram sweeps r through period doubling into chaos, with the period and Lyapunov exponent. |
 | `icons` | **Symmetry in chaos.** One point hopping chaotically, millions of times, develops a symmetric picture (Field & Golubitsky). |
 | `threeBody` | **The three-body problem**, where Poincaré found chaos in 1889, as a long exposure, with a faint ghost of the same bodies started 10⁻⁶ away. In turn: Burrau's Pythagorean problem (masses 3, 4, 5 released from rest dance, then two pair off and the third is thrown out, for ever), Lagrange's triangle (unstable: the ghost's breaks up after four turns, the real one after eight, from rounding errors alone), and the figure-eight (stable: the ghost stays). |
+| `billiards` | **Chaotic billiards.** An elliptical table above Bunimovich's stadium, three balls in each leaving the same point 10⁻⁶ rad apart, as a long exposure: in the ellipse they stay together, one white path fenced in by its caustic; in the stadium they part within a few bounces and go everywhere. |
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
@@ -51,7 +52,7 @@ No npm dependencies.
 	module: "MMM-ChaosTheory",
 	position: "middle_center",
 	config: {
-		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody"],
+		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody", "billiards"],
 		cycleSeconds: 60,
 		width: 900,
 		height: 900,
@@ -63,7 +64,7 @@ No npm dependencies.
 
 | Option | Default | Description |
 |---|---|---|
-| `simulations` | all six | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
+| `simulations` | all seven | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
 | `cycleSeconds` | `60` | Move to the next simulation this often |
 | `width`, `height` | `900` | Canvas size in pixels |
 | `fps` | `20` | Frame-rate cap |

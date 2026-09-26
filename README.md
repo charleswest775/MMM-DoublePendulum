@@ -24,6 +24,7 @@ And some that aren't chaos, each meant for a page of its own (see [An atom page]
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
 | `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
 | `chladni` | **Chladni figures.** Sand scattered on a square plate with free edges; the plate sings one of its modes, the grains hop off the parts that move and come to rest on the lines that don't, and the figure appears. Then it holds. 49 figures, one per showing, with the note a real steel plate would sound and the story of the figures (Chladni, Napoleon's prize, Sophie Germain, Ritz). |
+| `orbital` | **The quantum atom.** Hydrogen's electron in one of 30 states, shown the only way it can be seen: one measurement at a time, each dot a place it was found, with probability \|ψ\|². The picture develops like a long exposure, lobes coloured by ψ's sign, around Bohr's orbit for the same energy (dashed). Meant to share the atom's page. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
 
@@ -68,6 +69,8 @@ No npm dependencies.
 | `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
 | `atomElements` | `[]` | `atom`: symbols to show, e.g. `["H", "Fe", "Au"]`. Empty = all 118 |
 | `atomOrder` | `"shuffle"` | `atom`: `"sequence"` goes through them by atomic number |
+| `orbitalSeconds` | `22` | `orbital`: the exposure; then it holds |
+| `orbitalRate` | `16000` | `orbital`: measurements per second |
 | `zoomTargets` | `[]` | `zoom`: which dives, e.g. `["seahorse", "elephant"]`. Empty = all five: `seahorse`, `julia-spiral`, `elephant`, `star`, `north` |
 | `zoomSeconds` | `2` | `zoom`: seconds per doubling of the magnification, at most. The zoom slows down when keyframes can't keep up |
 | `zoomWorkers` | `2` | `zoom`: how many of the Pi's four cores render keyframes |
@@ -129,6 +132,41 @@ The idea is from [MMM-AtomVisualizer](https://github.com/KristjanESPERANTO/MMM-A
 module's canvas, so the frame cap and `suspend()` apply. `data/elements.js` is derived from its
 data (`tools/build-elements.js`), originally from
 [Periodic-Table-JSON](https://github.com/Bowserinator/Periodic-Table-JSON) (CC BY-SA 3.0).
+
+### The quantum atom
+
+List `orbital` with `atom` on the atom's page and they take turns, one per showing: Bohr's
+picture of 1913, then Schrödinger's of 1926.
+
+```js
+config: {
+	simulations: ["atom", "orbital"],
+	cycleSeconds: 60,   // one per showing, taking turns
+	width: 700,
+	height: 700,
+	fps: 12
+}
+```
+
+Each showing takes hydrogen's electron in one of 30 states |n l m⟩, from 1s to 6h, and plots
+where it is found, one measurement at a time: ~350,000 dots in 22 s, each drawn at random with
+probability |ψ|² (Born's rule) in a thin slice through the nucleus, the plane containing the z
+axis, so the lobes, nodal planes and cones, and the radial nodes (n − l − 1 of them) show. Four
+of them are circular states (m = l = n − 1), seen from above in the plane they circle in: a ring
+whose most likely distance from the nucleus is exactly the radius of Bohr's orbit, n²a₀. Dashed
+on every picture is Bohr's orbit for the same n; the energies, −13.6 eV/n², are the same in both
+theories. Dots are warm where ψ is positive and cool where it's negative (on a ring, ψ's real
+part, whose phase winds m times round). The readout samples distances from the radial
+distribution r²R², so their mean can be watched converging on ⟨r⟩ = ½(3n² − l(l+1)) a₀.
+
+The wavefunctions are exact: ψ = R_nl(r) Y_l^m(θ, φ) from the associated Laguerre and Legendre
+functions. The tests check the polynomials, the normalisation, orthogonality and nodes of R_nl,
+⟨r⟩ and the circular states' most likely radius against their formulas, the nodal plane of p_z
+and cones of d_z², and that the sampled mean converges on ⟨r⟩.
+
+For the Pi: dots are counted per cell of a 640 × 640 grid, and turned into colour and drawn
+four times a second, not every frame (~70% of the canvas each time); after the exposure the
+sim rests. Not yet measured on the Pi.
 
 ## A fractal page
 
@@ -465,7 +503,10 @@ the planets: conjunctions and oppositions against the almanacs, JPL's two tables
 other, Kepler's third law, Venus's 8-year cycle and the 2.4° its pentagram turns in it, Mars
 going backwards at opposition, and the trigon's 243° steps. For the Chladni plate: the beam
 modes' frequencies and orthonormality, the plate's frequencies against Leissa's, the symmetries
-of the lowest modes, the data file against a fresh solve, and the sand on the nodal lines.
+of the lowest modes, the data file against a fresh solve, and the sand on the nodal lines. For
+the quantum atom: the special functions, the radial functions' normalisation, nodes and
+orthogonality, ⟨r⟩, the circular states' radius, nodal planes and cones, and Born's rule in the
+sampling.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

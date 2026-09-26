@@ -61,6 +61,12 @@ animations for his hallway mirror, as one page in a rotation of pages.
   into `data/chladni-modes.js`; tests match Leissa's published frequencies). Pixel buffer with
   dirty-rect putImageData: ~75% of the canvas per frame for 8–12 s while the sand moves, then
   rests. Not yet measured on the Pi.
+- `orbital` is not chaos: the quantum atom, meant to take turns with `atom` on its page
+  (`simulations: ["atom", "orbital"]`). Hydrogen |n l m⟩ (30 states, a deck), exact ψ; dots
+  sampled from |ψ|² in the x–z slice (circular states m = l = n − 1: the x–y plane, a ring at
+  Bohr's radius), counted on a 640² grid and coloured by ψ's sign 4× a second (~70% of the canvas
+  each time), 22 s exposure then rests. Readout: sampled mean r converging on ⟨r⟩. Not yet
+  measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

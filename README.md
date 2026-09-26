@@ -1,7 +1,7 @@
 # MMM-ChaosTheory
 
 A [MagicMirror²](https://magicmirror.builders/) module that shows chaos theory in motion,
-cycling through seven simulations, each with its equations and live numbers underneath:
+cycling through eight simulations, each with its equations and live numbers underneath:
 
 | key | what you see |
 |---|---|
@@ -12,6 +12,7 @@ cycling through seven simulations, each with its equations and live numbers unde
 | `icons` | **Symmetry in chaos.** One point hopping chaotically, millions of times, develops a symmetric picture (Field & Golubitsky). |
 | `threeBody` | **The three-body problem**, where Poincaré found chaos in 1889, as a long exposure, with a faint ghost of the same bodies started 10⁻⁶ away. In turn: Burrau's Pythagorean problem (masses 3, 4, 5 released from rest dance, then two pair off and the third is thrown out, for ever), Lagrange's triangle (unstable: the ghost's breaks up after four turns, the real one after eight, from rounding errors alone), and the figure-eight (stable: the ghost stays). |
 | `billiards` | **Chaotic billiards.** An elliptical table above Bunimovich's stadium, three balls in each leaving the same point 10⁻⁶ rad apart, as a long exposure: in the ellipse they stay together, one white path fenced in by its caustic; in the stadium they part within a few bounces and go everywhere. |
+| `rule30` | **Rule 30.** A row of cells, each new row made from the last by one rule, drawn a row at a time from a single cell: regular on the left, random on the right. The readout keeps the centre column's latest bits and how often it has been 1. |
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
@@ -52,7 +53,7 @@ No npm dependencies.
 	module: "MMM-ChaosTheory",
 	position: "middle_center",
 	config: {
-		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody", "billiards"],
+		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody", "billiards", "rule30"],
 		cycleSeconds: 60,
 		width: 900,
 		height: 900,
@@ -64,7 +65,7 @@ No npm dependencies.
 
 | Option | Default | Description |
 |---|---|---|
-| `simulations` | all seven | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
+| `simulations` | all eight | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
 | `cycleSeconds` | `60` | Move to the next simulation this often |
 | `width`, `height` | `900` | Canvas size in pixels |
 | `fps` | `20` | Frame-rate cap |

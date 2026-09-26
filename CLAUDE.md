@@ -15,7 +15,8 @@ animations for his hallway mirror, as one page in a rotation of pages.
   `logistic`, `icons`, `threeBody` (Burrau's Pythagorean problem, Lagrange's unstable triangle
   and the stable figure-eight, each with a ghost started 10⁻⁶ away; adaptive Dormand–Prince at
   10⁻¹², drawn as a long exposure), `billiards` (ellipse vs Bunimovich stadium, three balls
-  10⁻⁶ rad apart in each; one table per frame in turn), and the original `doublePendulum`.
+  10⁻⁶ rad apart in each; one table per frame in turn), `rule30` (a row at a time, 5 rows a
+  second: each frame changes one strip), and the original `doublePendulum`.
 - `atom` is not chaos: a Bohr-style atom for a page of its own (second module instance with
   `classes: "page-atom"`, see README). One element per sim instance, so `cycleSeconds` and
   `resume()` move to the next element. A sim instance may set `this.info` to supply its own

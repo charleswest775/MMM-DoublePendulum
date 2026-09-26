@@ -38,7 +38,9 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/plate.js",
 			"data/chladni-modes.js",
 			"simulations/chladni.js",
-			"simulations/orbital.js"
+			"simulations/orbital.js",
+			"simulations/hat.js",
+			"simulations/tilings.js"
 		].map((f) => this.file(f));
 	},
 

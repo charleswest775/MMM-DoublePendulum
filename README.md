@@ -15,8 +15,8 @@ A new simulation starts every `cycleSeconds`, and each time the module is shown 
 
 And some that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
 [A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page),
-[A planets' dance page](#a-planets-dance-page), [A Chladni page](#a-chladni-page) and
-[A photo page](#a-photo-page)):
+[A planets' dance page](#a-planets-dance-page), [A Chladni page](#a-chladni-page),
+[A tilings page](#a-tilings-page) and [A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
@@ -24,6 +24,7 @@ And some that aren't chaos, each meant for a page of its own (see [An atom page]
 | `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
 | `orbits` | **The planets' dance.** Real orbits from today, drawn as figures that look like sacred geometry: the line between Earth and Venus every 4 days for 8 years makes a five-petalled rose; Mars, Jupiter or Saturn seen from Earth loop back each time we overtake them; every meeting of Jupiter and Saturn for 800 years, joined in order, is Kepler's turning triangle. Then it holds. |
 | `chladni` | **Chladni figures.** Sand scattered on a square plate with free edges; the plate sings one of its modes, the grains hop off the parts that move and come to rest on the lines that don't, and the figure appears. Then it holds. 49 figures, one per showing, with the note a real steel plate would sound and the story of the figures (Chladni, Napoleon's prize, Sophie Germain, Ritz). |
+| `tilings` | **Tilings that never repeat.** Laid tile by tile, round and round from the centre, then held: a Penrose tiling (a new one every time), the Ammann–Beenker, a heptagonal or a dodecagonal one, Escher's *Circle Limit* (the hyperbolic plane in Poincaré's disc, five ways), or the hat, the single tile found in 2022 that covers the plane only without repeating. |
 | `orbital` | **The quantum atom.** Hydrogen's electron in one of 30 states, shown the only way it can be seen: one measurement at a time, each dot a place it was found, with probability \|ψ\|². The picture develops like a long exposure, lobes coloured by ψ's sign, around Bohr's orbit for the same energy (dashed). Meant to share the atom's page. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
@@ -78,6 +79,7 @@ No npm dependencies.
 | `sacredSeed` | none | `sacred`: draw this figure every time, by the number shown under it, e.g. `"3A7F21C0"` |
 | `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
 | `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
+| `tilingsSeconds` | `22` | `tilings`: seconds to lay a tiling; then it holds |
 | `orbitsSeconds` | `22` | `orbits`: seconds to draw a figure; then it holds |
 | `chladniSeconds` | `14` | `chladni`: the longest the plate sings; it stops sooner once the sand has settled (8–12 s) |
 | `chladniGrains` | `22000` | `chladni`: grains of sand |
@@ -388,6 +390,56 @@ whose grains moved. While the sand moves that is most of the plate, ~75% of the 
 atom, which costs ~78% of a core at this size and rate), for 8–12 s; then the sim rests. Not yet
 measured on the Pi; JavaScript takes ~1.3 ms a frame on a Mac.
 
+## A tilings page
+
+Another instance, showing only `tilings`:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-tilings",
+	position: "middle_center",
+	config: {
+		simulations: ["tilings"],
+		cycleSeconds: 600,  // one tiling per showing
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each showing lays one of ten tilings (a deck), tile by tile round and round from the centre in
+22 s, and holds it:
+
+- **Penrose, Ammann–Beenker, heptagonal and dodecagonal tilings**, by de Bruijn's multigrid
+  (1981): n families of evenly spaced parallel lines (5, 4, 7 or 6), at random offsets, and one
+  rhomb for each crossing of two lines, with sides along the two families' directions. Every
+  showing is a new tiling. For Penrose's the offsets add up to 0, as his matching rules need;
+  the readout counts the thick and thin rhombs, whose ratio closes in on φ, as the squares and
+  rhombs of the Ammann–Beenker close in on 1 : √2.
+- **Circle Limit**: the hyperbolic plane in Poincaré's disc, tiled by regular p-gons, q at each
+  corner ({7,3}, {5,4}, {4,5}, {6,4}, {3,7}), built by reflecting the central one in its sides
+  until the tiles are smaller than a pixel: every side a geodesic, an arc meeting the rim at
+  right angles. Half the triangles into which each tile's centre, corners and midpoints cut it
+  are shaded, as in the figure of Coxeter's that Escher saw in 1957. All the tiles are the same
+  size; the readout says how far out the farthest is, and how many times smaller it has to be
+  drawn there.
+- **The hat** (`simulations/hat.js`), the einstein of Smith, Myers, Kaplan and Goodman-Strauss
+  (2023), built by their substitution of four metatiles, after Kaplan's reference
+  implementation: four rounds give 7,921 hats (89², as the rounds give 2², 5², 13², 34²: squares
+  of Fibonacci numbers), of which a disc of ~600 is shown, coloured by the metatile each belongs
+  to, the reflected ones apart. The readout counts them: unreflected to reflected close in on
+  φ⁴ = 6.854.
+
+The tests check that each is a tiling: no overlaps and no gaps (by sampling points), rhombs of
+the right sides and areas, the golden ratio and √2 in large patches, hyperbolic tiles all
+congruent (sides and circumradius equal in the hyperbolic metric, q at each corner), and the
+hat's counts, congruence and ratio.
+
+For the Pi: drawn in a spiral, a frame's new tiles lie together: on average about 1% of the
+canvas changes per frame, the least of any page, then the sim rests. Not yet measured on the Pi.
+
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
@@ -506,7 +558,8 @@ modes' frequencies and orthonormality, the plate's frequencies against Leissa's,
 of the lowest modes, the data file against a fresh solve, and the sand on the nodal lines. For
 the quantum atom: the special functions, the radial functions' normalisation, nodes and
 orthogonality, ⟨r⟩, the circular states' radius, nodal planes and cones, and Born's rule in the
-sampling.
+sampling. For the tilings: no overlaps or gaps, the rhombs' sides, areas and proportions,
+hyperbolic congruence, and the hat's Fibonacci counts and φ⁴ ratio.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

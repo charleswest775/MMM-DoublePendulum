@@ -67,6 +67,12 @@ animations for his hallway mirror, as one page in a rotation of pages.
   Bohr's radius), counted on a 640² grid and coloured by ψ's sign 4× a second (~70% of the canvas
   each time), 22 s exposure then rests. Readout: sampled mean r converging on ⟨r⟩. Not yet
   measured on the Pi.
+- `tilings` is not chaos: a page of its own (`classes: "page-tilings"`), a deck of ten: Penrose,
+  Ammann–Beenker, heptagonal, dodecagonal (de Bruijn multigrid, random offsets), five hyperbolic
+  {p,q} in Poincaré's disc (reflections, geodesic arcs, Coxeter's shaded triangles), and the hat
+  (`simulations/hat.js`: the paper's H/T/P/F metatile substitution after Kaplan's code; tests
+  check no overlaps/gaps and 4, 25, 169, 1156 hats per level). Laid in a spiral in 22 s, then
+  rests: ~1% of the canvas changes per frame. Not yet measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

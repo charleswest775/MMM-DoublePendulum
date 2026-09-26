@@ -287,8 +287,13 @@ nothing new. The photo it had ready next goes back on the deck, to open the next
 Each photo is laid out once, while the one before it is held: scaled to fit with the better
 filter, its date under it, on a canvas of its own. A crossfade then only copies pixels, and only
 in the box where either photo is: between two landscape photos, the black above and below them
-is left alone. That box is still redrawn in full every frame of a crossfade, at up to `fps`:
-not yet measured on the mirror.
+is left alone. That box is still redrawn in full every frame of a crossfade. Measured on the
+mirror (seven showings, 900×1000): a crossfade takes 140–170% of a core for its 0.8 s, at a
+steady 20 fps (frames 50 ms apart, none over 67 ms, in 12 fades timed), and laying out the next
+photo 40–80% for ~0.4 s after it; a held photo ~1%. Over the 20 s page that's 39% of a core
+(31–56%), where one photo held for the whole page was 14%, most of either being the page change
+itself (~180% for its first second). The photo pages now cost about what the sacred geometry
+page does (41% over its 30 s): less of a rest for the Pi than they were.
 
 List the class on more than one page, e.g.
 `modules: [["page-chaos"], ["page-photos"], ["page-atom"], ["page-photos"]]`, and each
@@ -327,7 +332,9 @@ as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of o
 | `atom`, 700×700 at 20 fps | 150 | 20 |
 | `zoom`, 700×700 at 12 fps, 2 workers (first 30 s of a dive: Elephant Valley, the star, the north bulb) | 155–168 | 13 |
 | `zoom`, the same, Seahorse Valley / the Julia spiral | 234 / 270 | 13 |
-| `photos`, 900×1000, while a photo is held (a spike to ~150 for the 2 s it takes to appear) | 1 | 0 |
+| `photos`, 900×1000, while a photo is held | 1 | 0 |
+| `photos`, a crossfade, 0.8 s (then 40–80 for ~0.4 s, laying out the next photo) | 140–170 | 20 |
+| `photos`, over a 20 s page of four photos, its page change included (~180 for the first second); one photo held for the page: 14 | 39 | |
 | `sacred`, 700×700 at 12 fps, while a figure is drawn (~117 for the first 3 s, the page's fade-in and the glow; 27–63 in 3-s windows) | 42 | 12 |
 | `sacred`, the finished figure held, with the stats panel on | 3 | 0 |
 | `lorenzStyle: "exposure"` | 55 | 20+ |

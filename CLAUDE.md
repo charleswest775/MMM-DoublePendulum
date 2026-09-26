@@ -41,10 +41,11 @@ animations for his hallway mirror, as one page in a rotation of pages.
   serves `~/mirror-photos` on the Pi (list + files, dates from EXIF via `photo-index.js`).
   **The photos are private: never commit them to this public repo.** Charles's curated
   originals live in `~/Pictures/Mirror` on the Mac; `mac/sync-mirror-photos.sh` in the setup
-  repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi. Measured: ~1% of a
-  core while a photo is held (spike ~150% for the 2 s it appears); the crossfades not yet
-  measured. The mirror rotates chaos → photos → atom → photos → fractal → photos → sacred →
-  photos, 20 s per photo page, at `fps: 20` for the crossfades.
+  repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi. Measured on the Pi
+  (900×1000, `fps: 20`): ~1% while a photo is held; a crossfade 140–170% for its 0.8 s at a
+  steady 20 fps, then 40–80% for ~0.4 s laying out the next photo; 39% over the 20 s page (was
+  14% with one photo; the page change itself is ~180% for a second). The mirror rotates chaos →
+  photos → atom → photos → fractal → photos → sacred → photos, 20 s per photo page.
 - `sacred` is not chaos: sacred geometry, a page of its own (`classes: "page-sacred"`). Each
   showing, `simulations/sacred-geometry.js` composes a new n-fold figure from a random 32-bit
   seed (a core — Seed/Flower of Life, Metatron's Cube, star cascade, whirl, times table, mystic
@@ -57,7 +58,8 @@ animations for his hallway mirror, as one page in a rotation of pages.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing
-  micro-benchmarks for the Pi; `tools/render-basins.js` renders the basin maps.
+  micro-benchmarks for the Pi, `dev/cpu-trace.py` traces its CPU; `tools/render-basins.js`
+  renders the basin maps.
 
 ## Performance findings on the Pi (measured, see README)
 
@@ -68,7 +70,12 @@ animations for his hallway mirror, as one page in a rotation of pages.
 - So: draw incrementally (long-exposure trails), keep each frame's changes spatially compact,
   and rest when the picture is static. Line width, opacity, `rAF` vs timer made no difference.
 - MagicMirror applies `electronSwitches` after app ready, so `remote-debugging-port` can't be
-  set that way; use `debugStats: true` and a `grim` screenshot to see fps on the Pi.
+  set that way; use `debugStats: true` and a `grim` screenshot to see fps on the Pi. For exact
+  frame times without the screen (photos show on it): patch the Pi's checkout for a while to
+  `sendSocketNotification` each frame's rAF time and have `node_helper.js` `console.log` it into
+  pm2's log; `git checkout` and restart after.
+- Per-page cost: `dev/cpu-trace.py` on the Pi traces Electron + cage every 0.25 s. MMM-pages'
+  timings are fixed, so find one page change and the rest follow; average pages second by second.
 
 ## Ideas Charles liked
 

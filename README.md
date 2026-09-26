@@ -13,12 +13,14 @@ cycling through five simulations, each with its equations and live numbers under
 
 A new simulation starts every `cycleSeconds`, and each time the module is shown again.
 
-And three that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
-[A fractal page](#a-fractal-page) and [A photo page](#a-photo-page)):
+And four that aren't chaos, each meant for a page of its own (see [An atom page](#an-atom-page),
+[A fractal page](#a-fractal-page), [A sacred geometry page](#a-sacred-geometry-page) and
+[A photo page](#a-photo-page)):
 
 | key | what you see |
 |---|---|
 | `zoom` | **Infinite zoom.** A dive into the Mandelbrot set or a Julia set, doubling the magnification every 2 s towards a point on its edge, with new detail at every scale, until 64-bit arithmetic runs out at about 10¹⁰×. Five dives, taking turns: Seahorse Valley, Elephant Valley, a Julia set's spiral, a three-armed star and the north bulb's filigree. |
+| `sacred` | **Sacred geometry.** A figure no one has seen before, drawn from the centre out with compass and straightedge, every symmetric copy at once: the Seed or Flower of Life, Metatron's Cube, stars within stars, a mystic rose, a whirl, golden spirals or a lotus, ringed by star polygons, petals, beads, arcades or rings after Whorld. Then it holds, finished. |
 | `atom` | **A Bohr-style atom.** The element's electrons circle the nucleus in their shells, the outermost in the colour of the element's family. Underneath: who discovered it, when, how, and when it joined the periodic table. A different element each time, all 118 before any repeats. |
 | `photos` | **A photo.** One of your own pictures, held still, with the date it was taken. A different one each time, all of them before any repeats. |
 
@@ -66,6 +68,10 @@ No npm dependencies.
 | `zoomTargets` | `[]` | `zoom`: which dives, e.g. `["seahorse", "elephant"]`. Empty = all five: `seahorse`, `julia-spiral`, `elephant`, `star`, `north` |
 | `zoomSeconds` | `2` | `zoom`: seconds per doubling of the magnification, at most. The zoom slows down when keyframes can't keep up |
 | `zoomWorkers` | `2` | `zoom`: how many of the Pi's four cores render keyframes |
+| `sacredSeconds` | `22` | `sacred`: seconds to draw a figure; then it holds |
+| `sacredSeed` | none | `sacred`: draw this figure every time, by the number shown under it, e.g. `"3A7F21C0"` |
+| `sacredFolds` | `[]` | `sacred`: symmetries to choose from, e.g. `[6, 12]`. Empty = all: 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 24 |
+| `sacredPalettes` | `[]` | `sacred`: colours to choose from, e.g. `["gold", "sapphire"]`. Empty = all: `gold`, `sapphire`, `rose`, `jade`, `amethyst`, `silver`, `spectrum`, `fire`, `aurora` |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
@@ -165,6 +171,77 @@ workers add ~25% each on the cheap dives and up to ~100% each on Seahorse Valley
 spiral. The Pi ran at 70–73 °C through the measurements. With the page hidden, the workers use
 nothing.
 
+## A sacred geometry page
+
+Another instance, showing only `sacred`:
+
+```js
+{
+	module: "MMM-ChaosTheory",
+	classes: "page-sacred",
+	position: "middle_center",
+	config: {
+		simulations: ["sacred"],
+		cycleSeconds: 600,  // one figure per showing, a new one each time the page comes round
+		sacredSeconds: 22,  // drawn in 22 s of a 30 s page, then held
+		width: 700,
+		height: 700,
+		fps: 12
+	}
+}
+```
+
+Each showing makes a new figure from a random 32-bit seed, and draws it the way it would be
+drawn by hand: from the centre out, the compass first, then the straightedge. Every symmetric
+copy is drawn at once by a pen of its own, so the figure is symmetric at every moment. In
+mirror-symmetric figures each element is drawn symmetrically too: a circle by two pens setting
+off in opposite directions from its point nearest the centre, a line from its middle out to
+both ends; so circles through the centre bloom out of it. A third of the figures turn instead:
+whirls, pinwheels, leaning petals, and pens that all go round the same way. Lines are added
+with `lighter` compositing, so where they cross they brighten, as light does, around a soft glow
+at the centre.
+
+A figure is a core, one to three bands and a rim:
+
+- **cores**: the Seed of Life (six circles through the centre, each centred on the first, so the
+  compass never changes) or up to 30 circles through the centre; the Flower of Life (circles on
+  a triangular lattice, cut off at the boundary: 19 whole circles and the arcs completing the
+  petals); Metatron's Cube (the Fruit of Life's 13 circles and the 78 lines between their
+  centres); stars within stars (each star's crossing sides are the next one's points: each
+  pentagram is 1/φ² the last); a whirl of pursuit polygons, each with its corners a little way
+  along the last one's sides, so every corner runs in on a logarithmic spiral; a times table,
+  point j of N joined to point (n + 1)·j, whose lines' envelope is an epicycloid with n cusps
+  (with one, the cardioid), or to (1 − n)·j, a hypocycloid; a mystic rose, every chord of its points;
+  spirals crossing like a sunflower's seeds, golden ones growing by φ each quarter turn; a lotus.
+- **bands**, each on the circle the last ended on: star polygons {k/q} whose sides touch that
+  circle (so their points are at r / cos(πq/k)); lotus petals; beads touching the circle and
+  each other; an arcade of arches; rings after [Whorld](https://victimofleisure.github.io/Whorld/),
+  each a star with its corners pulled in or out by a factor swinging on a sine as Whorld's
+  oscillators do, twisted further the farther out it is; logarithmic spirals; rays; rosettes,
+  small Seeds of Life repeating the figure in miniature, as
+  [OmniGeometry](https://www.omnigeometry.com/sacred-geometry-software/) draws a shape at the
+  points of itself.
+
+The symmetry is one of 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20 or 24, and the caption gives the
+side of its regular polygon and whether it could really be drawn with compass and straightedge
+alone: by the Gauss–Wantzel theorem only when n is a power of 2 times distinct Fermat primes
+(3, 5, 17, 257, 65537), so the 7-, 9- and 18-gons' corners are computed, not constructed.
+Spirals and Whorld's Bézier curves can't be drawn with compass and straightedge either: the
+readout says "by hand" while they're drawn. No two figures in a row share their core, palette
+or symmetry. The number under a finished figure draws it again (`sacredSeed`), and
+`dev/sacred-gallery.html` shows a wall of them to choose from.
+
+Inspired by Quentin Carpenter's
+[108 Sacred Geometry Animations](https://www.youtube.com/watch?v=_--7KU0oZOc) (light lines on
+black around a glowing centre), [evoluteur/sacred-geometry](https://github.com/evoluteur/sacred-geometry)
+(figures that draw themselves stroke by stroke, from circles and lines only), Whorld and
+OmniGeometry.
+
+For the Pi, each frame adds only what the pens drew since the last one, and once the figure is
+finished the sim rests: holding it should cost next to nothing, as holding a photo does. While drawing, the pens are
+spread round the figure, so a frame's changes span much of it, as the atom's do. Not measured
+on the mirror yet.
+
 ## A photo page
 
 A page that shows one photo, still, between the animations: after an animation the Pi gets a
@@ -256,6 +333,9 @@ node dev/serve.js            # then open http://localhost:8765/dev/preview.html
 node tools/render-basins.js  # re-render assets/basins-*.png after changing the magnetic pendulum
 ```
 
+With the server running, `/dev/sacred-gallery.html` shows a wall of finished sacred geometry
+figures; click one to watch it being drawn.
+
 The tests check the physics against known results rather than looks: energy conservation,
 the Lorenz fixed points and Lyapunov exponent (≈ 0.906), exponential divergence of the
 pendulums, the logistic map's bifurcation points and Feigenbaum ratio, the basins' three-fold
@@ -264,7 +344,12 @@ that every element's shells hold Z electrons, the periods obey T² ∝ r³, and 
 its history. For the zoom: escape times, that each Mandelbrot target is a Misiurewicz point of
 exactly its preperiod and period with a repelling cycle and each Julia target a repelling fixed
 point, that the deepest view is still resolvable in 64 bits, and that the zoom never runs ahead
-of its keyframes.
+of its keyframes. For sacred geometry: that the Flower of Life has its 19 circles and Metatron's
+Cube its 13 circles and 78 lines, that star polygons' sides touch the circle they should and
+nested pentagrams shrink by 1/φ², that pursuit polygons' corners lie on the last one's sides,
+that a golden spiral grows by φ a quarter turn, which polygons are constructible (checked
+against OEIS A003401), and, for many random figures, that each fills the unit circle and has
+the n-fold (and mirror) symmetry it claims, and that every stroke is drawn exactly once.
 
 `dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
 hide/show buttons that follow MagicMirror's suspend/resume order. `dev/serve.js` also serves

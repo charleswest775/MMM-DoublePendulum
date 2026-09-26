@@ -38,6 +38,13 @@ animations for his hallway mirror, as one page in a rotation of pages.
   repo resizes them (sips, 1600 px, EXIF kept) and rsyncs them to the Pi. Measured: ~1% of a
   core while a photo is held (spike ~150% for the 2 s it appears); the mirror rotates chaos →
   photo → atom → photo → fractal → photo, 20 s per photo.
+- `sacred` is not chaos: sacred geometry, a page of its own (`classes: "page-sacred"`). Each
+  showing, `simulations/sacred-geometry.js` composes a new n-fold figure from a random 32-bit
+  seed (a core — Seed/Flower of Life, Metatron's Cube, star cascade, whirl, times table, mystic
+  rose, spirals, lotus — then bands and a rim) as layers → steps → strokes in unit coordinates;
+  `sacred.js` draws it stroke by stroke from the centre out, every symmetric copy at once,
+  incrementally with `lighter` compositing, then rests. The seed is shown under the figure;
+  `sacredSeed` redraws it; `dev/sacred-gallery.html` shows many at once. Not yet measured on the Pi.
 - `tests/` — `node --test`, no dependencies, physics checked against known results.
 - `dev/preview.html` runs the module in a desktop browser (serve with `node dev/serve.js`,
   which also serves photos from `~/Pictures/Mirror`); `dev/bench.js` holds drawing

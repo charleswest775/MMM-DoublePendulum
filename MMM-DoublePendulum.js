@@ -30,7 +30,9 @@ Module.register("MMM-ChaosTheory", {
 			"simulations/atom.js",
 			"simulations/zoom-math.js",
 			"simulations/zoom.js",
-			"simulations/photos.js"
+			"simulations/photos.js",
+			"simulations/sacred-geometry.js",
+			"simulations/sacred.js"
 		].map((f) => this.file(f));
 	},
 

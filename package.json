@@ -1,11 +1,29 @@
 {
   "name": "mmm-chaostheory",
-  "version": "0.4.0",
-  "description": "MagicMirror² module: animated chaos-theory simulations (Lorenz attractor, diverging pendulums, fractal basins, logistic map, symmetric icons, the three-body problem, chaotic billiards, rule 30), and pages of physics and mathematics: a Bohr-style atom and hydrogen's orbitals, a fractal zoom, sacred geometry, the planets' dance, Chladni figures, aperiodic and hyperbolic tilings, snow crystals, and tonight's sky.",
+  "version": "1.0.0",
+  "description": "MagicMirror² module: chaos theory in motion, physically correct and cheap enough for a Raspberry Pi: the Lorenz attractor, diverging double pendulums, fractal basins, the logistic map, symmetric icons, the three-body problem, chaotic billiards and rule 30, each with its equations and live numbers.",
   "main": "MMM-ChaosTheory.js",
   "scripts": {
     "test": "node --test"
   },
-  "keywords": ["MagicMirror", "chaos", "double pendulum", "lorenz", "animation", "physics", "sacred geometry", "orbits", "chladni", "quasicrystal", "hyperbolic", "snowflake", "star chart", "three-body"],
+  "keywords": [
+    "MagicMirror",
+    "chaos",
+    "chaos theory",
+    "double pendulum",
+    "Lorenz attractor",
+    "three-body problem",
+    "fractal",
+    "logistic map",
+    "billiards",
+    "rule 30",
+    "physics",
+    "animation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charleswest775/MMM-ChaosTheory.git"
+  },
+  "author": "Charles West",
   "license": "MIT"
 }

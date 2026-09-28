@@ -12,6 +12,8 @@ Module.register("MMM-ChaosTheory", {
 		height: 900,
 		fps: 20,           // frame cap; lower = less CPU
 		showMath: true,    // equations and live numbers under the canvas
+		turns: null,       // e.g. { of: 3, at: 0 }: show only on every third showing, from the first,
+		                   // so modules sharing a page can take turns (see README)
 		statsPanel: false, // what the mirror is spending: fps, CPU (Electron, cage, each core), temperature
 		debugStats: false  // show achieved fps and frame timings in the corner of the screen
 	},
@@ -66,6 +68,8 @@ Module.register("MMM-ChaosTheory", {
 		this.running = false;
 		this.prepared = false; // the next simulation is ready, chosen while we were hidden
 		this.primer = null;    // pending attempt to draw it
+		this.shown = false;    // between resume() and suspend()
+		this.showings = -1;    // how many times we have been shown, counting from 0
 		this.lastFrame = 0;
 		this.startedAt = 0;
 		this.lastReadout = 0;
@@ -110,14 +114,14 @@ Module.register("MMM-ChaosTheory", {
 
 	notificationReceived (notification) {
 		if (notification === "DOM_OBJECTS_CREATED") {
-			this.nextSim();
 			// hiddenOnStartup or a pager may already have hidden us; resume() will start the loop
-			if (!this.hidden) this.play();
+			if (!this.hidden) this.resume();
 		}
 	},
 
 	// Called by MagicMirror after the module's hide/show animation (MMM-pages uses hide/show).
 	suspend () {
+		this.shown = false;
 		if (!this.running) return;
 		this.pause();
 		// resume() comes only after the fade-in, so anything left on the canvas would be what
@@ -129,7 +133,7 @@ Module.register("MMM-ChaosTheory", {
 		// it, so the page fades in on the new picture. Not for the simulations, which would
 		// then animate — or, in zoom's case, run its workers — with nobody looking.
 		const Next = this.peek();
-		if (Next && Next.preloadWhileHidden) {
+		if (Next && Next.preloadWhileHidden && this.myTurn(this.showings + 1)) {
 			this.nextSim();
 			this.prepared = true;
 			this.prime();
@@ -138,11 +142,24 @@ Module.register("MMM-ChaosTheory", {
 
 	resume () {
 		// MMM-pages calls show() on every module of the current page at each rotation,
-		// so only move on if we were actually stopped.
-		if (this.running) return;
+		// so only count a showing, and move on, if we were actually hidden.
+		if (this.shown || !this.canvas) return;
+		this.shown = true;
+		this.showings++;
+		// not our turn: take no room on the page, and cost nothing, until the next showing
+		this.wrapper.style.display = this.myTurn(this.showings) ? "" : "none";
+		if (!this.myTurn(this.showings)) return;
 		if (!this.prepared) this.nextSim(); // something different each time the page comes round
 		this.prepared = false;
 		this.play();
+	},
+
+	// With turns: { of: n, at: k }, modules on the same page count the same showings, so each
+	// shows on its own one in n.
+	myTurn (showing) {
+		const t = this.config.turns;
+		if (!t || !(t.of > 1)) return true;
+		return showing % t.of === (t.at || 0) % t.of;
 	},
 
 	// what nextSim() would show next, without moving on
@@ -167,7 +184,7 @@ Module.register("MMM-ChaosTheory", {
 			this.simIndex = (this.simIndex + 1) % names.length;
 			const Sim = registry[names[this.simIndex]];
 			if (Sim) return this.useSim(Sim);
-			Log.error(`[MMM-ChaosTheory] unknown simulation: ${names[this.simIndex]}`);
+			Log.error(`[${this.name}] unknown simulation: ${names[this.simIndex]}`);
 		}
 	},
 

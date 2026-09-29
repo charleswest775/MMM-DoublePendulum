@@ -1,6 +1,6 @@
-/* Server side of MMM-ChaosTheory: samples what the mirror costs, for the stats panel.
+/* Server side of MMM-DoublePendulum: samples what the mirror costs, for the stats panel.
  * Reads /proc and the thermal sensor (Linux only; elsewhere it reports what it can).
- * Samples only between CHAOS_STATS_START and CHAOS_STATS_STOP, i.e. while the module is shown.
+ * Samples only between STATS_START and STATS_STOP, i.e. while the module is shown.
  * With several instances (say one per MMM-pages page) one may start before the last has
  * stopped, so sampling ends only when every instance that started it has stopped.
  */
@@ -39,14 +39,14 @@ module.exports = NodeHelper.create({
 
 	socketNotificationReceived (notification, payload) {
 		const id = (payload && payload.id) || "";
-		if (notification === "CHAOS_STATS_START") {
+		if (notification === "STATS_START") {
 			this.watchers.add(id);
 			if (this.timer) return;
 			this.interval = (payload && payload.interval) || 2000;
 			this.prev = null;
 			this.sample();
 			this.timer = setInterval(() => this.sample(), this.interval);
-		} else if (notification === "CHAOS_STATS_STOP") {
+		} else if (notification === "STATS_STOP") {
 			this.watchers.delete(id);
 			if (this.watchers.size) return;
 			clearInterval(this.timer);
@@ -71,7 +71,7 @@ module.exports = NodeHelper.create({
 	},
 
 	sample () {
-		if (!fs.existsSync("/proc/stat")) return this.sendSocketNotification("CHAOS_STATS", { unsupported: true });
+		if (!fs.existsSync("/proc/stat")) return this.sendSocketNotification("STATS", { unsupported: true });
 		const { electron, cage } = this.pids();
 		const cur = {
 			at: process.hrtime.bigint(),
@@ -85,7 +85,7 @@ module.exports = NodeHelper.create({
 		if (!prev) return;
 		const secs = Number(cur.at - prev.at) / 1e9;
 		const pct = (a, b) => Math.max(0, ((a - b) / HZ / secs) * 100);
-		this.sendSocketNotification("CHAOS_STATS", {
+		this.sendSocketNotification("STATS", {
 			electron: pct(cur.electron, prev.electron),
 			cage: pct(cur.cage, prev.cage),
 			cores: cur.cores.map((c, i) => {

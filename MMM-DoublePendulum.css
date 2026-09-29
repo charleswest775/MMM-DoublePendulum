@@ -1,32 +1,32 @@
-.MMM-ChaosTheory .chaos-wrapper {
+.MMM-DoublePendulum .pendulum-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.MMM-ChaosTheory .chaos-canvas { display: block; }
+.MMM-DoublePendulum .pendulum-canvas { display: block; }
 
-.MMM-ChaosTheory .chaos-caption {
+.MMM-DoublePendulum .pendulum-caption {
 	margin-top: 18px;
 	text-align: left;
 	color: #ccc;
 	line-height: 1.35;
 }
 
-.MMM-ChaosTheory .chaos-title {
+.MMM-DoublePendulum .pendulum-title {
 	font-size: 34px;
 	font-weight: 300;
 	color: #fff;
 	margin-bottom: 10px;
 }
 
-.MMM-ChaosTheory .chaos-subtitle {
+.MMM-DoublePendulum .pendulum-subtitle {
 	display: block;
 	font-size: 18px;
 	color: #888;
 }
 
-.MMM-ChaosTheory .chaos-math {
+.MMM-DoublePendulum .pendulum-math {
 	font-family: "STIX Two Math", "Cambria Math", "DejaVu Serif", Georgia, serif;
 	font-style: italic;
 	font-size: 21px;
@@ -34,16 +34,16 @@
 	margin-bottom: 12px;
 }
 
-.MMM-ChaosTheory .chaos-math > div { margin: 6px 0; }
+.MMM-DoublePendulum .pendulum-math > div { margin: 6px 0; }
 
-.MMM-ChaosTheory .chaos-note {
+.MMM-DoublePendulum .pendulum-note {
 	font-family: "Roboto Condensed", sans-serif;
 	font-style: normal;
 	font-size: 16px;
 	color: #888;
 }
 
-.MMM-ChaosTheory .frac {
+.MMM-DoublePendulum .frac {
 	display: inline-flex;
 	flex-direction: column;
 	vertical-align: middle;
@@ -51,14 +51,14 @@
 	font-size: 0.85em;
 }
 
-.MMM-ChaosTheory .frac > span:first-child {
+.MMM-DoublePendulum .frac > span:first-child {
 	border-bottom: 1px solid currentcolor;
 	padding: 0 4px 2px;
 }
 
-.MMM-ChaosTheory .frac > span:last-child { padding-top: 2px; }
+.MMM-DoublePendulum .frac > span:last-child { padding-top: 2px; }
 
-.MMM-ChaosTheory .chaos-readout {
+.MMM-DoublePendulum .pendulum-readout {
 	font-family: "DejaVu Sans Mono", Menlo, monospace;
 	font-size: 16px;
 	color: #aaa;
@@ -66,7 +66,7 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.MMM-ChaosTheory .chaos-stats {
+.MMM-DoublePendulum .pendulum-stats {
 	margin-top: 14px;
 	padding-top: 8px;
 	border-top: 1px solid #222;
@@ -77,15 +77,15 @@
 	white-space: nowrap;
 }
 
-.MMM-ChaosTheory .chaos-stats b { color: #fff; font-weight: normal; }
-.MMM-ChaosTheory .chaos-stats .dim { color: #666; }
-.MMM-ChaosTheory .chaos-stats .sep { color: #444; margin: 0 8px; }
-.MMM-ChaosTheory .chaos-stats .cool { color: #7fd88f; }
-.MMM-ChaosTheory .chaos-stats .warm { color: #f2c14e; }
-.MMM-ChaosTheory .chaos-stats .hot { color: #ff6b6b; }
+.MMM-DoublePendulum .pendulum-stats b { color: #fff; font-weight: normal; }
+.MMM-DoublePendulum .pendulum-stats .dim { color: #666; }
+.MMM-DoublePendulum .pendulum-stats .sep { color: #444; margin: 0 8px; }
+.MMM-DoublePendulum .pendulum-stats .cool { color: #7fd88f; }
+.MMM-DoublePendulum .pendulum-stats .warm { color: #f2c14e; }
+.MMM-DoublePendulum .pendulum-stats .hot { color: #ff6b6b; }
 
 /* one small bar per core */
-.MMM-ChaosTheory .chaos-stats .bar {
+.MMM-DoublePendulum .pendulum-stats .bar {
 	display: inline-block;
 	position: relative;
 	width: 7px;
@@ -95,7 +95,7 @@
 	background: #222;
 }
 
-.MMM-ChaosTheory .chaos-stats .bar > span {
+.MMM-DoublePendulum .pendulum-stats .bar > span {
 	position: absolute;
 	left: 0;
 	right: 0;

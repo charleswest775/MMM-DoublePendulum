@@ -1,9 +1,9 @@
 /* Double pendulum, integrated with fixed-step RK4.
- * Registers itself on window.ChaosSimulations so the module can pick it by name.
+ * Registers itself on window.PendulumSimulations so the module can pick it by name.
  * Pure math in step(); all drawing in draw(), so the physics can be tested in Node.
  */
 (function (root) {
-	const { Trail } = root.ChaosCommon || require("./common.js");
+	const { Trail } = root.PendulumCommon || require("./common.js");
 	const G = 9.81;
 	const K = [0, 1, 2, 3].map(() => new Float64Array(4)); // RK4 scratch, shared
 
@@ -97,8 +97,8 @@
 		}
 	}
 
-	root.ChaosSimulations = root.ChaosSimulations || {};
+	root.PendulumSimulations = root.PendulumSimulations || {};
 	DoublePendulum.info = { title: "The double pendulum", subtitle: "two arms, and no way to predict where they will be" };
-	root.ChaosSimulations.doublePendulum = DoublePendulum;
+	root.PendulumSimulations.doublePendulum = DoublePendulum;
 	if (typeof module !== "undefined") module.exports = { DoublePendulum };
 })(typeof window !== "undefined" ? window : globalThis);

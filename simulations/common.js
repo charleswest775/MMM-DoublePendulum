@@ -80,8 +80,8 @@
 		return `${(v / 10 ** e).toFixed(digits)}×10${String(e).replace(/./g, (c) => SUP[c])}`;
 	};
 
-	const Chaos = { FixedClock, Trail, palette, sci };
-	root.ChaosCommon = Chaos;
-	root.ChaosSimulations = root.ChaosSimulations || {};
-	if (typeof module !== "undefined") module.exports = Chaos;
+	const Common = { FixedClock, Trail, palette, sci };
+	root.PendulumCommon = Common;
+	root.PendulumSimulations = root.PendulumSimulations || {};
+	if (typeof module !== "undefined") module.exports = Common;
 })(typeof window !== "undefined" ? window : globalThis);

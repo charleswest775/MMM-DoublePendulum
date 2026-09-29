@@ -4,9 +4,9 @@
  * plotted on a log scale: a straight rising line is exponential divergence.
  */
 (function (root) {
-	const { FixedClock, Trail, palette, sci } = root.ChaosCommon || require("./common.js");
-	const { DoublePendulum } = root.ChaosSimulations && root.ChaosSimulations.doublePendulum
-		? { DoublePendulum: root.ChaosSimulations.doublePendulum }
+	const { FixedClock, Trail, palette, sci } = root.PendulumCommon || require("./common.js");
+	const { DoublePendulum } = root.PendulumSimulations && root.PendulumSimulations.doublePendulum
+		? { DoublePendulum: root.PendulumSimulations.doublePendulum }
 		: require("./double-pendulum.js");
 
 	const TRAIL = 140;
@@ -218,11 +218,11 @@
 		equations: [
 			"θ̈₁ = <span class=\"frac\"><span>−3g sin θ₁ − g sin(θ₁ − 2θ₂) − 2 sin(θ₁ − θ₂) (θ̇₂² + θ̇₁² cos(θ₁ − θ₂))</span><span>3 − cos 2(θ₁ − θ₂)</span></span>",
 			"θ̈₂ = <span class=\"frac\"><span>2 sin(θ₁ − θ₂) (2θ̇₁² + 2g cos θ₁ + θ̇₂² cos(θ₁ − θ₂))</span><span>3 − cos 2(θ₁ − θ₂)</span></span>",
-			"<span class=\"chaos-note\">equal masses, 1 m arms, g = 9.81 m/s² — integrated with RK4 at 240 steps per second</span>"
+			"<span class=\"pendulum-note\">equal masses, 1 m arms, g = 9.81 m/s² — integrated with RK4 at 240 steps per second</span>"
 		]
 	};
 
-	root.ChaosSimulations = root.ChaosSimulations || {};
-	root.ChaosSimulations.pendulums = Pendulums;
+	root.PendulumSimulations = root.PendulumSimulations || {};
+	root.PendulumSimulations.pendulums = Pendulums;
 	if (typeof module !== "undefined") module.exports = { Pendulums };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -7,7 +7,7 @@ Module.register("MMM-DoublePendulum", {
 	defaults: {
 		// shown in turn; each keyed in window.PendulumSimulations
 		simulations: ["pendulums"],
-		cycleSeconds: 600, // a new one each time the module is shown, or this often
+		cycleSeconds: 60,   // a new run each time the module is shown, or this often
 		width: 900,        // canvas size in CSS pixels
 		height: 900,
 		fps: 20,           // frame cap; lower = less CPU

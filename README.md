@@ -1,57 +1,52 @@
-# MMM-ChaosTheory
+# MMM-DoublePendulum
 
-A [MagicMirror²](https://magicmirror.builders/) module that shows chaos theory in motion: eight
-physically correct simulations, one at a time, each with its equations and live numbers underneath.
+A [MagicMirror²](https://magicmirror.builders/) module that releases five double pendulums 10⁻⁶ rad apart and shows them swing as one, then fan out, drawn for a Raspberry Pi without a GPU.
 
-![Fractal basins: a pendulum over three magnets, each pixel coloured by the magnet it ends over](screenshot.png)
+![Five double pendulums fanned out in five colours, the log plot of their spread, and the equations and angles under it](screenshot.png)
 
-| key | what you see |
-|---|---|
-| `lorenz` | **The Lorenz attractor.** Three trajectories released 10⁻⁵ apart trace the butterfly as one white line, then split into red, green and blue, while the view turns slowly in 3D. |
-| `pendulums` | **Sensitive dependence.** Five double pendulums released 10⁻⁶ rad apart swing as one, then fan out, with the angles to 7 decimals and a log-scale plot of their spread (a straight line = exponential divergence). |
-| `basins` | **Fractal basins.** A pendulum over three magnets: each pixel is coloured by the magnet it ends over. Two bobs released 6×10⁻⁴ apart swing live and land on different magnets; then the view zooms ×10, ×100, ×1000 into the boundary where they started. |
-| `logistic` | **The road to chaos.** The logistic map's bifurcation diagram paints itself, then a cobweb diagram sweeps r through period doubling into chaos, with the period and Lyapunov exponent. |
-| `icons` | **Symmetry in chaos.** One point hopping chaotically, millions of times, develops a symmetric picture (Field & Golubitsky). |
-| `threeBody` | **The three-body problem**, where Poincaré found chaos in 1889, as a long exposure, with a faint ghost of the same bodies started 10⁻⁶ away. In turn: Burrau's Pythagorean problem (masses 3, 4, 5 released from rest dance, then two pair off and the third is thrown out, for ever), Lagrange's triangle (unstable: the ghost's breaks up after four turns, the real one after eight, from rounding errors alone), and the figure-eight (stable: the ghost stays). |
-| `billiards` | **Chaotic billiards.** An elliptical table above Bunimovich's stadium, three balls in each leaving the same point 10⁻⁶ rad apart, as a long exposure: in the ellipse they stay together, one white path fenced in by its caustic; in the stadium they part within a few bounces and go everywhere. |
-| `rule30` | **Rule 30.** A row of cells, each new row made from the last by one rule, drawn a row at a time from a single cell: regular on the left, random on the right. The readout keeps the centre column's latest bits and how often it has been 1. |
+## What you see
 
-A new simulation starts every `cycleSeconds`, and each time the module is shown again.
+**Sensitive dependence.** Five double pendulums released 10⁻⁶ rad apart swing as one, then fan
+out, with the angles to 7 decimals and a log-scale plot of their spread (a straight line =
+exponential divergence). While they agree their colours add up to white; as they part, each
+shows its own. A new set is released every 30 s. Or, with `pendulumStyle: "exposure"`, only the
+outer bobs' light trails, building up like a long-exposure photograph of LED-tipped pendulums.
+
+Under them: the equations of motion, and a readout of both angles of every pendulum, the time
+since release and the spread.
+
+Also here, as `doublePendulum`: the original single double pendulum, with a fading trail behind
+its outer bob, released at random each time.
 
 Built for a **Raspberry Pi 3 without GPU acceleration**: everything is drawn by the CPU, so the
-drawing is designed around what that costs (see [Performance](#performance)), and the animation
-stops completely while the module is hidden.
+drawing is designed around what that costs, and the animation stops completely while the module
+is hidden (see [Performance](#performance)).
 
 ## Installation
 
 ```bash
 cd ~/MagicMirror/modules
-git clone https://github.com/charleswest775/MMM-ChaosTheory
+git clone https://github.com/charleswest775/MMM-DoublePendulum
 ```
 
-No npm dependencies, so no `npm install`.
+No npm dependencies: there is nothing to install.
 
 ## Update
 
 ```bash
-cd ~/MagicMirror/modules/MMM-ChaosTheory
+cd ~/MagicMirror/modules/MMM-DoublePendulum
 git pull
 ```
-
-Up to version 0.4 this module also had the atom, fractal zoom, sacred geometry, sky, planets,
-Chladni, tilings, snow and photo pages. Each is now a module of its own (see
-[the family](#the-family)): install it, and change `module: "MMM-ChaosTheory"` to its name in
-that page's config. Their options are unchanged.
 
 ## Configuration
 
 ```js
 {
-	module: "MMM-ChaosTheory",
+	module: "MMM-DoublePendulum",
 	position: "middle_center",
 	config: {
-		simulations: ["lorenz", "pendulums", "basins", "logistic", "icons", "threeBody", "billiards", "rule30"],
-		cycleSeconds: 60,
+		simulations: ["pendulums"],
+		pendulumStyle: "live",
 		width: 900,
 		height: 900,
 		fps: 20
@@ -61,118 +56,136 @@ that page's config. Their options are unchanged.
 
 | Option | Default | Description |
 |---|---|---|
-| `simulations` | all eight | Which to show, in order. Also available: `doublePendulum` (the original single pendulum) |
-| `cycleSeconds` | `60` | Move to the next simulation this often |
+| `simulations` | `["pendulums"]` | Which to show, in turn: `"pendulums"` (five, released 10⁻⁶ rad apart) and `"doublePendulum"` (the single one). `["doublePendulum"]` for the single one only, `["pendulums", "doublePendulum"]` for both |
+| `pendulumStyle` | `"live"` | `pendulums`: `"live"` draws arms, bobs and fading trails. `"exposure"`: only the outer bobs' light trails, building up like a long-exposure photograph of LED-tipped pendulums. About half the CPU on a Pi |
+| `cycleSeconds` | `60` | Move to the next simulation (or start the one afresh) this often; that also happens each time the module is shown again |
 | `width`, `height` | `900` | Canvas size in pixels |
 | `fps` | `20` | Frame-rate cap |
 | `showMath` | `true` | Equations and live numbers under the canvas |
-| `lorenzStyle` | `"rotate"` | `"exposure"`: fixed view, trails build up like a long-exposure photo. About a third of the CPU on a Pi |
-| `pendulumStyle` | `"live"` | `"exposure"`: only the bobs' light trails, building up like a long-exposure photo of LED-tipped pendulums. About half the CPU on a Pi |
-| `threeBodyScene` | taking turns | `threeBody`: always this one: `"pythagorean"`, `"lagrange"` or `"figure-eight"` |
-| `turns` | `null` | Share a page with other modules, taking turns: see [Taking turns](#taking-turns) |
+| `turns` | `null` | Take turns with other modules on the same page, e.g. `{ of: 2, at: 1 }` (see [Taking turns](#taking-turns)) |
 | `statsPanel` | `false` | A line under the math showing what the mirror spends: fps, CPU of Electron and the compositor, a bar per core, temperature, and the simulation cycle. Sampled by the module's `node_helper` from `/proc`, only while the module is shown |
 | `debugStats` | `false` | Show achieved fps and per-frame timings in the corner of the screen |
 
 ## Taking turns
 
-With [MMM-pages](https://github.com/edward-shen/MMM-pages), a page can hold several modules that
-take turns, one per showing, so the rotation doesn't grow with every module. Give each
-`turns: { of: n, at: k }`: it shows on showings k, k + n, k + 2n… of its page (counting from 0),
-and on the others takes no room and costs nothing. For instance the chaos page and
-[MMM-FractalZoom](https://github.com/charleswest775/MMM-FractalZoom) in turn:
+With `turns: { of: n, at: k }`, modules on the same [MMM-pages](https://github.com/edward-shen/MMM-pages)
+page each show on their own one in n showings of it: `at: 0` on the first showing and every
+nth after it, `at: 1` on the second, and so on. A module that isn't on its turn takes no room on
+the page and costs nothing: it hides its canvas and doesn't start. So one slot in the rotation
+can hold several pages, without making the rotation longer. For example, the pendulums and
+[MMM-LorenzAttractor](https://github.com/charleswest775/MMM-LorenzAttractor)'s butterfly, one
+per showing:
 
 ```js
 {
-	module: "MMM-ChaosTheory",
-	classes: "page-science",
+	module: "MMM-DoublePendulum",
+	classes: "page-chaos",
 	position: "middle_center",
 	config: { turns: { of: 2, at: 0 } }
 },
 {
-	module: "MMM-FractalZoom",
-	classes: "page-science",
+	module: "MMM-LorenzAttractor",
+	classes: "page-chaos",
 	position: "middle_center",
 	config: { turns: { of: 2, at: 1 } }
 },
+{
+	module: "MMM-pages",
+	config: { modules: [["page-clock"], ["page-chaos"]], rotationTime: 60000 }
+},
 ```
 
-and `modules: [["page-science"], /* … */]` in MMM-pages' config. Without `turns` the module simply
-shows whenever it is shown, on a page of its own or in any region without MMM-pages.
+Without `turns` the module shows every time. It works just as well on a page of its own, or in
+a normal region without MMM-pages, where it moves on every `cycleSeconds`.
+
+## What's real
+
+Each double pendulum is two equal masses on massless, rigid 1 m arms, with g = 9.81 m/s² and no
+friction (`simulations/double-pendulum.js`). Its full, nonlinear equations of motion are
+integrated by the fourth-order Runge–Kutta method at a fixed 240 steps per second, in fixed
+substeps, so the simulated time keeps pace with real time however the frames fall.
+
+The five (`simulations/pendulums.js`) are released from rest, both arms at a random angle
+between 0.6π and 0.95π either side of hanging straight down, the upper arms 10⁻⁶ rad apart
+from one pendulum to the next. The spread is the largest difference between any two of them in
+the angle of either arm, taken around the circle, so at most π; it is plotted once a second,
+on a log scale from 10⁻⁷ rad. A difference that grows exponentially is a straight rising line
+on that plot, until the spread is as large as it can be. The readout gives each pendulum's
+angles in radians, between −π and π, to 7 decimals. The single pendulum starts with both arms
+at a random 0.55π–0.95π either side, and keeps its outer bob's last 600 positions as its trail.
+
+The tests check the physics against known results rather than looks: the double pendulum
+conserves its energy (to 10⁻⁴ over 60 s); two released 10⁻⁹ rad apart at large angles end up
+more than 10 cm apart after 30 s, while small swings stay together, as a simple pendulum's
+would; simulated time tracks real time with jittery frames. And for the five: they start
+4×10⁻⁶ rad apart, are still within 10⁻³ rad after 2 s and more than 0.5 rad apart after 25 s,
+each conserves its energy, the logarithm of their spread rises in a straight line, and the
+spread is measured around the circle.
 
 ## Performance
 
-Measured on the mirror (Pi 3 B+, Electron 42, software rendering, 900×900 canvas, 20 fps),
-as CPU of the Electron processes plus the `cage` compositor over 60 s, in % of one core
-(the Pi has four). Baseline mirror without the module: 0.2%.
+Measured on a Raspberry Pi 3 B+ (Electron 42, software rendering), 900×900 at 20 fps, as CPU
+of the Electron processes plus the `cage` compositor over 60 s, in % of one core (the Pi has
+four); baseline mirror without the module: 0.2%.
 
 | | % of one core | achieved fps |
 |---|---|---|
-| module **hidden** (e.g. another MMM-pages page) | **0.3** | 0 |
-| `lorenz` (rotating) | 165 | 16 |
-| `pendulums` (live) | 146 | 19 |
-| `basins` (average over its sequence; ~7 while a picture is held) | 42 | 20 |
-| `logistic` | 73 | 17 |
-| `icons` (while developing, ~45 s; then ~7) | 66 | 17 |
-| `threeBody`, over a 60 s showing (Burrau's problem and Lagrange's triangle) | 76 | 24 |
-| `billiards`, the same | 58 | 22 |
-| `rule30`, the same | 28 | 20 |
-| `lorenzStyle: "exposure"` | 55 | 20+ |
-| `pendulumStyle: "exposure"` | 66 | 20+ |
-| *v0.1.0 single pendulum, 30 fps, for comparison* | *140 + cage* | |
+| module **hidden** (e.g. another MMM-pages page) | 0.3 | 0 |
+| `pendulums`, `pendulumStyle: "live"` | 146 | 19 |
+| `pendulums`, `pendulumStyle: "exposure"` | 66 | 20+ |
+| *the single pendulum as first written (v0.1.0), at 30 fps* | *140 + cage* | |
 
-Where a simulation can't reach 20 fps the Pi's renderer is saturated, so its CPU stays near
-150% whatever `fps` is set to.
+The live style is close to all the Pi's renderer can do: where a simulation can't reach its
+frame rate the renderer is saturated, and the CPU stays near 150% whatever `fps` is set to. The
+long exposure only adds what is new, at less than half the cost. `doublePendulum` clears and
+redraws the whole canvas every frame, and full redraws of a 900×900 canvas at 20 fps saturate
+the renderer; it hasn't been measured as it is now.
 
-What costs what, from micro-benchmarks on the Pi (`dev/bench.js`):
+Why it costs what it does, from micro-benchmarks on the Pi:
 
+- There is no GPU acceleration to be had (the Pi 3's GPU only does GLES 2.0; Chromium needs
+  3.0), so every pixel is drawn by the CPU.
 - Any frame that changes the canvas costs ~2% of a core per fps, before drawing anything.
 - On top of that, cost grows with the **area that changes**: Chromium redraws the bounding box
-  of everything touched in a frame. Clearing all 900×900 doubles the cost. So the simulations
-  draw only what's new (long-exposure trails, incremental plots) and avoid changing distant
-  parts of the canvas in the same frame.
+  of everything touched in a frame. So the live style clears and redraws only the box around the
+  pendulums and their trails (this frame's and the last frame's), and adds to the plot below
+  only once a second, as each new point widens the area that frame changes; the long exposure
+  draws only the tips' paths since the last frame.
 - JavaScript is not the bottleneck: step and draw take 0.1–3 ms per frame.
-- The frame loop sleeps with `setTimeout` until a frame is due. A simulation showing a finished
-  picture rests, and is only polled twice a second. While MagicMirror fades the module out,
-  nothing new is drawn.
-
-The fractal basin maps are rendered ahead of time (`node tools/render-basins.js`, ~2 min on
-a Mac): at ~3.5 ms per pixel, a Pi 3 would need 47 minutes of CPU for one.
+- The frame loop sleeps with `setTimeout` until a frame is due. While MagicMirror² fades the
+  module out, nothing new is drawn; once it is hidden, the loop stops.
 
 ## Development
 
 ```bash
-node --test                  # physics checks, no dependencies
-node dev/serve.js            # then open http://localhost:8765/dev/preview.html
-node tools/render-basins.js  # re-render assets/basins-*.png after changing the magnetic pendulum
+node --test              # physics checks (no dependencies)
+python3 -m http.server   # then open http://localhost:8000/dev/preview.html
 ```
 
-The tests check the physics against known results rather than looks: energy conservation,
-the Lorenz fixed points and Lyapunov exponent (≈ 0.906), exponential divergence of the
-pendulums, the logistic map's bifurcation points and Feigenbaum ratio, the basins' three-fold
-symmetry and convergence under a finer time step, the icons' n-fold symmetry, the three-body
-problem's conserved quantities and Burrau's escape, the billiards' reflections, and rule 30's rows.
-
-`dev/preview.html` runs the module outside MagicMirror, in a portrait 1200×1920 frame, with
-hide/show buttons that follow MagicMirror's suspend/resume order. Query options override the
-config, e.g. `?simulations=threeBody&threeBodyScene=lagrange`. `dev/cpu-trace.py` traces the
-mirror's CPU on the Pi, a quarter of a second at a time.
-
-## The family
-
-Pages of physics and mathematics for the same kind of mirror, each its own module, built the
-same way (a frame-capped canvas that rests when the picture is still and stops when hidden) and
-able to take turns on a page:
-
-- [MMM-Atom](https://github.com/charleswest775/MMM-Atom): a Bohr-style atom, element by element, and hydrogen's quantum orbitals
-- [MMM-FractalZoom](https://github.com/charleswest775/MMM-FractalZoom): an infinite zoom into the Mandelbrot set and Julia sets
-- [MMM-Chladni](https://github.com/charleswest775/MMM-Chladni): sand on a vibrating plate finds its nodal lines
-- [MMM-SacredGeometry](https://github.com/charleswest775/MMM-SacredGeometry): a new compass-and-straightedge figure each time
-- [MMM-Tilings](https://github.com/charleswest775/MMM-Tilings): Penrose, hyperbolic and hat tilings, laid tile by tile
-- [MMM-PlanetsDance](https://github.com/charleswest775/MMM-PlanetsDance): real orbits from today, drawn as figures
-- [MMM-SnowCrystal](https://github.com/charleswest775/MMM-SnowCrystal): a snow crystal grown live
-- [MMM-NightSky](https://github.com/charleswest775/MMM-NightSky): the sky over the mirror, tonight
-- [MMM-PhotoDeck](https://github.com/charleswest775/MMM-PhotoDeck): your photos, one at a time, crossfading
+`dev/preview.html` runs the module outside MagicMirror², in a portrait 1200×1920 frame, with
+hide/show buttons that follow MagicMirror²'s suspend/resume order. Query options override the
+config, e.g. `?pendulumStyle=exposure`, `?simulations=doublePendulum`, or
+`?simulations=pendulums,doublePendulum&cycleSeconds=30` for both in turn.
 
 ## License
 
 MIT
+
+Part of a family of MagicMirror² modules. The chaos:
+[MMM-ChaosTheory](https://github.com/charleswest775/MMM-ChaosTheory) (all eight in one),
+[MMM-LorenzAttractor](https://github.com/charleswest775/MMM-LorenzAttractor),
+[MMM-FractalBasins](https://github.com/charleswest775/MMM-FractalBasins),
+[MMM-LogisticMap](https://github.com/charleswest775/MMM-LogisticMap),
+[MMM-SymmetricIcons](https://github.com/charleswest775/MMM-SymmetricIcons),
+[MMM-ThreeBody](https://github.com/charleswest775/MMM-ThreeBody),
+[MMM-ChaoticBilliards](https://github.com/charleswest775/MMM-ChaoticBilliards) and
+[MMM-Rule30](https://github.com/charleswest775/MMM-Rule30).
+And more:
+[MMM-Atom](https://github.com/charleswest775/MMM-Atom),
+[MMM-FractalZoom](https://github.com/charleswest775/MMM-FractalZoom),
+[MMM-Chladni](https://github.com/charleswest775/MMM-Chladni),
+[MMM-SacredGeometry](https://github.com/charleswest775/MMM-SacredGeometry),
+[MMM-Tilings](https://github.com/charleswest775/MMM-Tilings),
+[MMM-PlanetsDance](https://github.com/charleswest775/MMM-PlanetsDance),
+[MMM-SnowCrystal](https://github.com/charleswest775/MMM-SnowCrystal) and
+[MMM-NightSky](https://github.com/charleswest775/MMM-NightSky).

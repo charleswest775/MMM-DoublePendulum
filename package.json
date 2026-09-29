@@ -1,7 +1,7 @@
 {
   "name": "mmm-doublependulum",
   "version": "1.0.0",
-  "description": "MagicMirror² module: Sensitive dependence: five double pendulums released 10⁻⁶ rad apart swing as one, then fan out.",
+  "description": "MagicMirror² module: five double pendulums released 10⁻⁶ rad apart swing as one, then fan out, with their spread on a log plot, integrated by RK4 and drawn for a Raspberry Pi without a GPU.",
   "main": "MMM-DoublePendulum.js",
   "scripts": {
     "test": "node --test"

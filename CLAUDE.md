@@ -40,8 +40,8 @@ MMM-Rule30, and the non-chaos pages: MMM-Atom, MMM-FractalZoom, MMM-Chladni, MMM
 MMM-Tilings, MMM-PlanetsDance, MMM-SnowCrystal, MMM-NightSky, MMM-PhotoDeck), all checked out
 side by side in `~/dev/mirror-modules/`: a fix there probably belongs in the siblings too.
 
-As of the split, the mirror's config.js (in the setup repo, being reworked) gives it a page of
-its own, `classes: "page-pendulums"`, 900×900 at 20 fps; check there for the current rotation.
+On the mirror (config.js in the setup repo, since 2026-09-28) it has a page of its own, `classes: "page-pendulums"`,
+45 s, 900×900 at 20 fps, followed by 20 s of photos, like each of the eight chaos modules.
 
 ## Measured cost on the Pi
 

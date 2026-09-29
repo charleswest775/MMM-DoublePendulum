@@ -41,8 +41,8 @@ here probably belongs in the siblings too.
 
 chaos (60 s; one simulation per showing) → photos (20) → atom (45; MMM-Atom, atom and orbital in
 turn) → photos → fractal (30; MMM-FractalZoom and MMM-Chladni taking turns) → photos → sacred
-(30; MMM-SacredGeometry, MMM-Tilings, MMM-PlanetsDance taking turns) → photos → sky (30),
-~4½ minutes. MMM-SnowCrystal isn't in it: add it to a slot for the winter.
+(30; MMM-SacredGeometry, MMM-Tilings, MMM-PlanetsDance taking turns) → photos → sky (30) →
+snow (30, MMM-SnowCrystal, since 2026-09-28) → photos, ~5½ minutes.
 
 ## Performance findings on the Pi (measured, see README)
 

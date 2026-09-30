@@ -37,7 +37,7 @@ The shell (`MMM-DoublePendulum.js`, `node_helper.js`'s stats panel, `dev/preview
 shared in spirit with the sibling modules (MMM-ChaosTheory, MMM-LorenzAttractor,
 MMM-FractalBasins, MMM-LogisticMap, MMM-SymmetricIcons, MMM-ThreeBody, MMM-ChaoticBilliards,
 MMM-Rule30, and the non-chaos pages: MMM-Atom, MMM-FractalZoom, MMM-Chladni, MMM-SacredGeometry,
-MMM-Tilings, MMM-PlanetsDance, MMM-SnowCrystal, MMM-NightSky, MMM-PhotoDeck), all checked out
+MMM-Tilings, MMM-PlanetsDance, MMM-SnowCrystal, MMM-NightSky, MMM-PhotoDeck, and the five of 2026-09-29, MMM-StandardMap, MMM-ChaoticWaterwheel, MMM-DoubleSlit, MMM-Sandpile, MMM-Harmonograph), all checked out
 side by side in `~/dev/mirror-modules/`: a fix there probably belongs in the siblings too.
 
 On the mirror (config.js in the setup repo, since 2026-09-28) it has a page of its own, `classes: "page-pendulums"`,
